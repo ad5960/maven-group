@@ -1,17 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./components/nav";
-import LANight from "./assets/LANight.jpg"
+import LANight from "./assets/beach.jpg"
 export default function Page() {
   return (
-    <>
-      <Navbar/>
+    <div>
       <div className="w-full h-screen max-h-screen overflow-hidden">
-        <Image src={LANight} alt="Los Angeles Night" layout="responsive" className="opacity-90"/>
-        <div className="absolute inset-0 flex justify-center items-center">
-          <p className="text-white text-center text-2xl"><span className="text-6xl">maven</span><span className="text-2xl"> noun </span><br /><span className="text-3xl"> ma-ven </span><br/> variants or less commonly known as mavin <br/>: One who is experienced or knowledgeable: EXPERT</p>
-        </div>  
-      </div>
+      <Navbar/>
+  <Image src={LANight} alt="Los Angeles Night" layout="responsive" className="filter brightness-75"/>
+  <div className="absolute inset-0 flex justify-center items-center">
+    <p className="text-white text-center text-2xl font-extrabold">
+      <span className="text-6xl">maven</span>
+      <span className="text-2xl"> noun </span><br />
+      <span className="text-3xl typing-effect-maven"> ma-ven </span><br/> 
+      variants or less commonly known as mavin <br/>
+      <span className="typing-effect">: One who is experienced or knowledgeable: EXPERT</span>
+    </p>
+  </div>
+</div>
       <div className="w-full flex flex-col justify-center items-center">
         <div className="flex flex-row justify-between items-center max-w-6xl py-10">
           <Image src={LANight} alt="About Us Image" width={500} height={200} className="mx-10" />
@@ -29,6 +35,6 @@ export default function Page() {
           
         </div>
       </div>
-    </>
+      </div>
   )
 }

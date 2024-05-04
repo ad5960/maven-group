@@ -28,3 +28,71 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 101%; }
+}
+
+@keyframes typing-maven {
+  from { width: 0; }
+  to { width: 19%; }
+}
+
+@keyframes blink-cursor {
+  from, to { border-color: transparent }
+  50% { border-color: white; }
+}
+
+.typing-effect {
+  overflow:hidden;
+  border-right: 2px solid white; /* Cursor style */
+  white-space: nowrap;
+  display: inline-block;
+  width: 0;
+  animation: typing 4s steps(40, end) forwards,
+             blink-cursor 0.75s step-end infinite;
+}
+.typing-effect-maven {
+  overflow: hidden;
+  border-right: 2px solid white; /* Cursor style */
+  white-space: nowrap;
+  display: inline-block;
+  width: 0; /* Start with no width to hide text */
+  animation: typing-maven 4s steps(30, end) forwards,
+             blink-cursor 0.75s step-end infinite;
+}
+
+.nav-link {
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #ffffff;
+  padding: 10px 0px;
+  margin: 0px 20px;
+  display: inline-block;
+  position: relative;
+  opacity: 0.75;
+}
+
+.nav-link:hover {
+  opacity: 1;
+}
+
+.nav-link::before {
+  transition: 300ms;
+  height: 3px;
+  content: "";
+  position: absolute;
+  background-color: #000000;
+}
+
+.nav-link-ltr::before {
+  width: 0%;
+  bottom: 1px;
+}
+
+.nav-link-ltr:hover::before {
+  width: 100%;
+}
