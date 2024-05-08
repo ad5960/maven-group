@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "../components/nav";
 import SantaMonica from "../assets/SantaMonica.jpg"
 import PropertyCard from "../components/property_card";
+import { BlackTag } from "../components/tag";
 export default function Page() {
     return (
         <>
@@ -28,6 +29,16 @@ export default function Page() {
                     </button>
                 </div>
             </div>
+            <div className="flex w-full h-4 justify-center items-center px-24 my-2">
+                <div className="flex flex-row w-2/3 justify-start items-center relative">
+                    <p className="text-xl text-center">Select: </p>
+                    <BlackTag/>
+                    <BlackTag/>
+                    <BlackTag/>
+                    <BlackTag/>
+
+                </div>
+            </div>
             <div className="flex flex-col my-20 justify-center items-center">
                 <div className="flex flex-row m-5">
                     <PropertyCard/>
@@ -45,31 +56,6 @@ export default function Page() {
                     <PropertyCard />
                 </div>
             </div>
-            {/* <div className="w-full h-full flex flex-col">
-                <div className="mt-28 ml-24 flex justify-center items-start">
-                    <div className="w-2/3">
-                        <p className="text-4xl font-bold ">Properties</p>
-                    </div>
-                </div>
-
-                <div className="flex flex-col my-20 justify-center items-center">
-                    <div className="flex flex-row m-5">
-                        <PropertyCard />
-                        <PropertyCard />
-                        <PropertyCard />
-                    </div>
-                    <div className="flex flex-row m-5">
-                        <PropertyCard />
-                        <PropertyCard />
-                        <PropertyCard />
-                    </div>
-                    <div className="flex flex-row m-5">
-                        <PropertyCard />
-                        <PropertyCard />
-                        <PropertyCard />
-                    </div>
-                </div>
-            </div> */}
         </>
     )
 }
