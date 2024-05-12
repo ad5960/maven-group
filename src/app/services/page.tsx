@@ -50,9 +50,9 @@ export default function Page() {
             <div className="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-4 p-4">
       <div className="md:flex-1">
         <Image 
-          src={streetImg} // Change to your image path
-          width={600} // Adjust as needed
-          height={300} // Adjust as needed
+          src={streetImg}
+          width={600} 
+          height={300} 
           alt="Descriptive Alt Text"
         />
       </div>
@@ -66,12 +66,12 @@ export default function Page() {
       </div>
             </div>
             
-            <div className="flex flex-col md:flex-row items-center md:space-x-4 p-4">
+            <div className="flex flex-col md:flex-row items-center md:space-x-4 p-4 ">
       <div className="md:flex-1">
         <Image 
-          src={shopsImg} // Change to your image path
-          width={600} // Adjust as needed
-          height={300} // Adjust as needed
+          src={shopsImg}
+          width={600} 
+          height={300} 
           alt="Descriptive Alt Text"
         />
       </div>
