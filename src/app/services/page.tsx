@@ -15,7 +15,7 @@ export default function Page() {
                     className="opacity-90"
                 />
                 <div className="absolute inset-0 flex justify-center items-center">
-                    <p className="text-white text-center text-5xl">Contact Us</p>
+                    <p className="text-white text-center text-5xl">Services</p>
                 </div>
             </div>
         </>
