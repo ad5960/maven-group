@@ -4,11 +4,11 @@ import Navbar from "../components/nav";
 import SantaMonica from "../assets/SantaMonica.jpg"
 import PropertyCard from "../components/property_card";
 import { BlackTag } from "../components/tag";
+import SingleProperty from "./single_property";
 export default function Page() {
     return (
         <>
             <Navbar/>
-
             <div className="w-full h-10 mt-32">
                 <span className="w-1/2 justify-center items-center"><p className="text-4xl font-bold text-center">Properties</p></span>
             </div>
