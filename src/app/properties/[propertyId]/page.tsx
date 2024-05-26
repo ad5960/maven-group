@@ -1,10 +1,34 @@
+"use client"
 import ContactForm from "../../components/contact_form";
 import Image from "next/image";
 import LANight from "../../assets/LANight.jpg"
 import Navbar from "../../components/nav";
-import { Divider } from "@mui/material";
+import { useEffect, useState } from "react";
+import Property from "@/app/models/property";
+import axios from "axios";
 
-export default function Page() {
+export default function SingleProperty({ params }: {params: {propertyId: string}}) {
+    const id  = params.propertyId;
+    const [property, setProperty] = useState<Property>();
+
+    console.log("Getting id: ", id);
+    useEffect(() => {
+        async function fetchProperty() {
+            if (id) {
+                const res = await axios.get(`/properties/${id}/api`);
+                setProperty(res.data);
+            }
+        }
+        
+        fetchProperty();
+
+    }, [id]);
+
+    if (!property) {
+        return <div>Loading...</div>;
+    }
+
+    console.log(property);
     return (<>
         <Navbar/>
         <div className="flex mt-20">

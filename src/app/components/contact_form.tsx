@@ -1,12 +1,47 @@
-import AgentCard from "./agent_card";
+"use client"
+import { useEffect, useState } from "react";
+import AgentCard from "../agents/[agentId]/page";
 import { FormControl, InputLabel, OutlinedInput } from '@mui/material';
+import Agent from "../models/agent";
+import axios from "axios";
+import { usePathname } from "next/navigation";
+
 export default function ContactForm () {
+    const [agents, setAgents] = useState<Agent[]>([]);
+    const [loading, setLoading] = useState(true); // Add loading state
+    const pathname = usePathname();
+
+    useEffect(() => {
+        async function fetchAgents() {
+            try {
+                console.log("Fetching agents...");
+                const res = await axios.get("/agents/api"); 
+                setAgents(res.data);
+                setLoading(false); // Set loading to false after data is fetched
+            } catch (e) {
+                console.error("Error fetching agents: ", e);
+                setLoading(false); // Set loading to false even if there is an error
+            }
+        }
+
+        fetchAgents();
+    }, []);
+
+    if (loading) {
+        return <div className="flex justify-center items-center h-full">Loading...</div>; // Show a loading spinner or any loading indicator
+    }
+
+    const agentId = agents[0].id;
+    console.log("AgentID: ", agentId);
+
+    const isContactUsPage = (pathname === '/contact_us')
     return (
         <>
             <div className="flex flex-col  w-1/2 h-[75vh] border border-slate-400 border-x-4 rounded-lg">
                 <p className="mx-2 my-4 font-bold text-2xl">Contact an agent</p>
-                <AgentCard/>
-                <AgentCard />
+                
+                {isContactUsPage ? (<></>) : (<AgentCard params={{ agentId }} />)}
+                
                 <p className="mx-2 my-4 font-bold">Send a Message</p>
                 <div className="mx-2 space-y-4">
                     <FormControl variant="outlined" fullWidth>

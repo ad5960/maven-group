@@ -13,15 +13,20 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.17",
+    "aws-sdk": "^2.1622.0",
+    "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
     "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18"
-
+    "react-dom": "^18",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.8",
     "eslint": "^8",
     "eslint-config-next": "14.2.3",
     "postcss": "^8",

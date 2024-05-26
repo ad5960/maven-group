@@ -5,13 +5,13 @@ import SantaMonica from "../assets/SantaMonica.jpg";
 import officeImg from "../assets/office.jpg";
 import shopsImg from "../assets/shops.jpg";
 import streetImg from "../assets/street.jpg";
-import { useInView } from 'react-intersection-observer'; // Import the hook
+// import { useInView } from 'react-intersection-observer'; // Import the hook
 
 export default function Page() {
-    const { ref, inView } = useInView({
-        triggerOnce: true,
-        threshold: 0  // Trigger when 50% of the element is in view
-    });
+    // const { ref, inView } = useInView({
+    //     triggerOnce: true,
+    //     threshold: 0  // Trigger when 50% of the element is in view
+    // });
 
     return (
         <>
@@ -35,6 +35,7 @@ export default function Page() {
           width={600} // Adjust as needed
           height={300} // Adjust as needed
           alt="Descriptive Alt Text"
+          layout="responsive"
         />
       </div>
       <div className="md:flex-1 mt-4 md:mt-0">
@@ -54,6 +55,7 @@ export default function Page() {
           width={600} 
           height={300} 
           alt="Descriptive Alt Text"
+          layout="responsive"
         />
       </div>
       <div className="md:flex-1 mt-4 md:mt-0">
@@ -73,6 +75,7 @@ export default function Page() {
           width={600} 
           height={300} 
           alt="Descriptive Alt Text"
+          layout="responsive"
         />
       </div>
       <div className="md:flex-1 mt-4 md:mt-0">

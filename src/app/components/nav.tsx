@@ -25,7 +25,7 @@ const Navbar = (props: Props) => {
     };
   }, []);
 
-  const isPropertiesPage = pathname === '/properties' || pathname === '/properties/single_property';
+  const isPropertiesPage = pathname.startsWith('/properties');
   
   return (
     <nav className={`fixed top-0 left-0 flex flex-row w-full py-10 ${scrolled || isPropertiesPage? 'bg-white text-black' : 'bg-transparent text-white'} z-50 overflow-hidden`}>
