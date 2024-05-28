@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation"
 
-export default function page() {
+export default function Page() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");

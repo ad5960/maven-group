@@ -1,30 +1,129 @@
+"use client"
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-export default function page() {
-    return (<>
+export default function Page() {
+    const [propertyType, setPropertyType] = useState("");
+    const [buildingSize, setBuildingSize] = useState("");
+    const [landSize, setLandSize] = useState("");
+    const [yearBuilt, setYearBuilt] = useState("");
+    const [street, setStreet] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const [zipCode, setZipCode] = useState("");
+    const router = useRouter();
+
+    async function handleSubmit() {
+        try {
+            const res = await axios.post("/admin/add_property/api", {
+                propertyType,
+                buildingSize,
+                landSize,
+                yearBuilt,
+                tenancy: "tenancy",
+                address: {
+                    street,
+                    city,
+                    state,
+                    zipCode
+                }
+            });
+            console.log("Property added:", res.data);
+            router.push("/admin/dashboard");
+        } catch (error) {
+            console.error("Error adding property:", error);
+        }
+    }
+
+    return (
         <div className="flex w-full h-full justify-center">
             <div className="flex flex-col items-center">
                 <p className="text-4xl font-semibold my-10">Add a Property</p>
                 <FormGroup className="mx-2 space-y-4">
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="name-input">Name</InputLabel>
-                        <OutlinedInput id="name-input" label="Name" />
+                        <InputLabel htmlFor="propertyType-input">Property Type</InputLabel>
+                        <OutlinedInput
+                            id="propertyType-input"
+                            label="Property Type"
+                            value={propertyType}
+                            onChange={(e) => setPropertyType(e.target.value)}
+                        />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="email-input">Email</InputLabel>
-                        <OutlinedInput id="email-input" label="Email" />
+                        <InputLabel htmlFor="buildingSize-input">Building Size</InputLabel>
+                        <OutlinedInput
+                            id="buildingSize-input"
+                            label="Building Size"
+                            value={buildingSize}
+                            onChange={(e) => setBuildingSize(e.target.value)}
+                        />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="phone-input">Phone Number</InputLabel>
-                        <OutlinedInput id="phone-input" label="Phone Number" />
+                        <InputLabel htmlFor="landSize-input">Land Size</InputLabel>
+                        <OutlinedInput
+                            id="landSize-input"
+                            label="Land Size"
+                            value={landSize}
+                            onChange={(e) => setLandSize(e.target.value)}
+                        />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="license-input">License Number</InputLabel>
-                        <OutlinedInput id="license-input" label="License Number" />
+                        <InputLabel htmlFor="yearBuilt-input">Year Built</InputLabel>
+                        <OutlinedInput
+                            id="yearBuilt-input"
+                            label="Year Built"
+                            value={yearBuilt}
+                            onChange={(e) => setYearBuilt(e.target.value)}
+                        />
                     </FormControl>
-                    <Button type="submit" name="Submit" variant="contained" color="primary">Submit</Button>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="street-input">Street</InputLabel>
+                        <OutlinedInput
+                            id="street-input"
+                            label="Street"
+                            value={street}
+                            onChange={(e) => setStreet(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="city-input">City</InputLabel>
+                        <OutlinedInput
+                            id="city-input"
+                            label="City"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="state-input">State</InputLabel>
+                        <OutlinedInput
+                            id="state-input"
+                            label="State"
+                            value={state}
+                            onChange={(e) => setState(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="zipCode-input">Zip Code</InputLabel>
+                        <OutlinedInput
+                            id="zipCode-input"
+                            label="Zip Code"
+                            value={zipCode}
+                            onChange={(e) => setZipCode(e.target.value)}
+                        />
+                    </FormControl>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </Button>
                 </FormGroup>
             </div>
         </div>
-    </>)
+    );
 }
