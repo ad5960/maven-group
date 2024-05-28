@@ -15,11 +15,11 @@ export async function POST(req: Request) {
 
     try {
         // Extract agent data from request body
-        const { offer, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
+        const { offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
             address: { street, city, state, zipCode }, }: Property = await req.json();
 
         // Example: Perform validation if needed
-        if (!offer || !propertyType || !buildingSize || !landSize || !yearBuilt || !tenancy || !frontage || !parking || !zoning || highlights.length === 0 || attachments.length === 0 || !street || !city || !state || !zipCode) {
+        if (!offer || !askingPrice || !pricePerSF || !propertyType || !buildingSize || !landSize || !yearBuilt || !tenancy || !frontage || !parking || !zoning || highlights.length === 0 || attachments.length === 0 || !street || !city || !state || !zipCode) {
             return NextResponse.json({ error: 'Incomplete property data' });
         }
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         const params = {
             TableName: 'properties', // Replace with your DynamoDB table name
             Item: {
-                id, offer, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
+                id, offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
                 address: { street, city, state, zipCode },
             }
         };

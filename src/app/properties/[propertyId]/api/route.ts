@@ -3,9 +3,9 @@ import Property from "@/app/models/property";
 import axios from "axios";
 import { NextResponse } from "next/server";
 
-export async function GET(_req: Request, {params}: {params: {id: string}}) {
+export async function GET(_req: Request, {params}: {params: {propertyId: string}}) {
     try {
-        if (!params.id) {
+        if (!params.propertyId) {
             return NextResponse.json({ error: 'Property ID is required' });
         }
 
@@ -13,7 +13,7 @@ export async function GET(_req: Request, {params}: {params: {id: string}}) {
         const parameter = {
             TableName: 'properties', // Replace with your DynamoDB table name
             Key: {
-                id: params.id.toString(),
+                id: params.propertyId.toString(),
             },
         };
 
@@ -28,7 +28,7 @@ export async function GET(_req: Request, {params}: {params: {id: string}}) {
         const property: Property = data.Item as Property;
 
         // Return the property details
-        NextResponse.json(property);
+        return NextResponse.json(property);
     } catch (error) {
         console.error('Error retrieving property:', error);
         NextResponse.json({ error: 'Failed to retrieve property' });

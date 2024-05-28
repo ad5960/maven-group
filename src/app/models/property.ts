@@ -9,6 +9,8 @@ export enum OfferType {
 export default interface Property {
     id: string;
     offer: OfferType;            // Offer type
+    askingPrice: number;         // Asking Price
+    pricePerSF: number;
     propertyType: string;        // Property type
     buildingSize: string;        // Building size in square feet
     landSize: string;            // Land size in square feet
@@ -33,6 +35,8 @@ export default interface Property {
 const property: Property = {
     id: "1234566",
     offer: OfferType.ForSale,
+    askingPrice: 4100000,
+    pricePerSF: 7,
     propertyType: "Retail Space",
     buildingSize: "4878 SF",
     landSize: "5000 SF",

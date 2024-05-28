@@ -39,13 +39,13 @@ export default function SingleProperty({ params }: {params: {propertyId: string}
                         {/* Listing address*/}
                         <div>
                         <p className="flex text-xl text-slate-400 font-bold">Listings</p>
-                        <p className="text-5xl font-bold">1415 Wilshire Boulevard</p>
+                        <p className="text-5xl font-bold">{property.frontage}</p>
                         </div>
                         <hr className="w-1/3 border-2 border-slate-400 my-4"/>
                         <div className="space-y-2">
-                        <p className="text-3xl font-bold text-slate-400">.For Sale or Lease - $4,100,000</p>
-                        <p className="text-3xl font-bold text-slate-400">Santa Monica, CA 90402</p>
-                        <p className="text-3xl font-bold text-slate-400">Retail Space | 4870 square feet</p>
+                        <p className="text-3xl font-bold text-slate-400">{property.offer} - {property.askingPrice}</p>
+                        <p className="text-3xl font-bold text-slate-400">{property.address.city}, {property.address.state} {property.address.zipCode}</p>
+                        <p className="text-3xl font-bold text-slate-400">{property.propertyType} | {property.buildingSize} square feet</p>
                         </div>
                     </div>
                     <div className="flex flex-1 mx-10 my-16 w-1/3">
@@ -62,77 +62,78 @@ export default function SingleProperty({ params }: {params: {propertyId: string}
                             <p className="flex text-2xl font-bold mt-8">Details</p>
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Offer</p>
-                                <p className="flex flex-1">.For Sale or Lease</p>
+                                <p className="flex flex-1">{property.offer}</p>
                             </div>
                             <hr className="border-1 border-slate-400"/>
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Property Type</p>
-                                <p className="flex flex-1">Retail Space</p>
+                                <p className="flex flex-1">{property.propertyType}</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Building Size</p>
-                                <p className="flex flex-1">4878 SF</p>
+                                <p className="flex flex-1">{property.buildingSize} SF</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Land Size</p>
-                                <p className="flex flex-1">5000 SF</p>
+                                <p className="flex flex-1">{property.landSize} SF</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Year Built</p>
-                                <p className="flex flex-1">1930</p>
+                                <p className="flex flex-1">{property.yearBuilt}</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Tenancy</p>
-                                <p className="flex flex-1">Single (Building can be divisible by two)</p>
+                                <p className="flex flex-1">{property.tenancy}</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Frontage</p>
-                                <p className="flex flex-1">50’ along Wilshire Boulevard</p>
+                                <p className="flex flex-1">{property.frontage}</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Parking</p>
                                 <p className="flex flex-1">
-                                    No dedicated (ample metered street parking along Wilshire & a city metered lot across the street)
+                                    {property.parking}
                                 </p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <div className="flex flex-row my-4">
                                 <p className="flex flex-1 font-bold">Zoning</p>
-                                <p className="flex flex-1">MUB (Mixed-Use Boulevard)</p>
+                                <p className="flex flex-1">{property.zoning}</p>
                             </div>
                             <hr className="border-1 border-slate-400" />
 
                             <p className="flex text-2xl font-bold mt-8">Highlights</p>
                             <ul className="list-disc mx-5 my-5">
-                                <li>Excellent, Infill Santa Monica Location</li>
-                                <li>High Traffic Retail Corridor</li>
-                                <li>Excellent Westside Location with Silicon Beach Drivers</li>
-                                <li>Ample Area Amenities</li>
+                                {property.highlights.map((hl) => (
+                                    <li>{hl}</li>
+                                ))}
                             </ul>
 
                             <p className="flex text-2xl font-bold mt-8">Downloads</p>
                             <ul className="list-disc mx-5 my-5">
-                                <li><a href="#">Marketing Brochure</a></li>
+                                {property.downloads.attachments.map((dl) => (
+                                    <li><a href="#">{dl}</a></li>
+                                ))}
                             </ul>
 
                             <p className="flex text-2xl font-bold mt-8">Address</p>
-                            <p className="my-5 mb-20">1415 Wilshire Blvd <br/>
-                                Santa Monica, CA 90402</p>
-
+                            <p className="my-5 mb-20">{property.frontage}<br/>
+                                {property.address.city}, {property.address.state} {property.address.zipCode}
+                            </p>
 
                         </div>
                     </div>
