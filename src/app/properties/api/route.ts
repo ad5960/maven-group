@@ -1,5 +1,6 @@
 import dynamodb from "@/app/lib/dynamodb";
-import Property from "@/app/models/property";
+import Property, { OfferType } from "@/app/models/property";
+import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid"
 export const config = {
@@ -48,6 +49,10 @@ export async function POST(req: Request) {
 
 // GET /api/agents
 export async function GET(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const location = searchParams.get('location');
+    const propertyType = searchParams.get('type');
+    const offerType = searchParams.get('offerType');
     try {
         // Example: Retrieve all agents from DynamoDB
         const params = {
@@ -57,10 +62,23 @@ export async function GET(req: Request) {
         const data = await dynamodb.scan(params).promise();
 
         // Extract the items from the response data
-        const agents: Property[] = data.Items as Property[];
+        let properties: Property[] = data.Items as Property[];
+
+        // Filter properties based on the query parameters
+        if (location && location !== "option1") {
+            properties = properties.filter(property => property.address.city === location);
+        }
+
+        if (propertyType && propertyType !== "option1") {
+            properties = properties.filter(property => property.propertyType === propertyType);
+        }
+
+        if (offerType && offerType !== OfferType.All) {
+            properties = properties.filter(property => property.offer === offerType);
+        }
 
         // Return the list of agents
-        return NextResponse.json(agents);
+        return NextResponse.json(properties);
     } catch (error) {
         console.error('Error retrieving properties:', error);
         return NextResponse.json({ error: 'Failed to retrieve properties' });

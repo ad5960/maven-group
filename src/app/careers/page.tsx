@@ -29,7 +29,7 @@ export default function Page() {
                 <div className="flex flex-row">
                     <div className="flex flex-1 flex-col mx-10">
                             <p className="text-4xl font-bold my-5">Location</p>
-                            <p>Our office is located in West Los Angeles and serves the immediately surrounding markets of Los Angeles and Orange Counties.</p>
+                            <p>Our office is located in Culver City and serves the immediately surrounding markets of Los Angeles.</p>
                         </div>
                     <div className="flex flex-1 flex-col mx-10">
                         <p className="text-4xl font-bold my-5">What We Seek</p>
