@@ -6,7 +6,7 @@ import Agent from "../models/agent";
 import axios from "axios";
 import { usePathname } from "next/navigation";
 
-export default function ContactForm () {
+export default function ContactForm() {
     const [agents, setAgents] = useState<Agent[]>([]);
     const [loading, setLoading] = useState(true); // Add loading state
     const pathname = usePathname();
@@ -15,7 +15,7 @@ export default function ContactForm () {
         async function fetchAgents() {
             try {
                 console.log("Fetching agents...");
-                const res = await axios.get("/agents/api"); 
+                const res = await axios.get("/agents/api");
                 setAgents(res.data);
                 setLoading(false); // Set loading to false after data is fetched
             } catch (e) {
@@ -36,35 +36,33 @@ export default function ContactForm () {
 
     const isContactUsPage = (pathname === '/contact_us')
     return (
-        <>
-            <div className="flex flex-col  w-1/2 h-[75vh] border border-slate-400 border-x-4 rounded-lg">
-                <p className="mx-2 my-4 font-bold text-2xl">Contact an agent</p>
-                
-                {isContactUsPage ? (<></>) : (<AgentCard params={{ agentId }} />)}
-                
-                <p className="mx-2 my-4 font-bold">Send a Message</p>
-                <div className="mx-2 space-y-4">
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="name-input">Full Name</InputLabel>
-                        <OutlinedInput id="name-input" label="Full Name" />
-                    </FormControl>
+        <div className="flex flex-col w-full max-w-lg mx-auto h-[75vh] border border-slate-400 rounded-lg p-4 md:w-2/3 lg:w-1/2">
+            <p className="mb-4 font-bold text-2xl text-center md:text-left">Contact an agent</p>
 
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="phone-input">Phone Number</InputLabel>
-                        <OutlinedInput id="phone-input" label="Phone Number" />
-                    </FormControl>
+            {!isContactUsPage && <AgentCard params={{ agentId }} />}
 
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="email-input">Email Address</InputLabel>
-                        <OutlinedInput id="email-input" label="Email Address" />
-                    </FormControl>
+            <p className="mb-4 font-bold text-center md:text-left">Send a Message</p>
+            <div className="space-y-4">
+                <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="name-input">Full Name</InputLabel>
+                    <OutlinedInput id="name-input" label="Full Name" />
+                </FormControl>
 
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="msg-input">Message</InputLabel>
-                        <OutlinedInput id="msg-input" label="Message" minRows={4} multiline />
-                    </FormControl>
-                </div>
+                <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="phone-input">Phone Number</InputLabel>
+                    <OutlinedInput id="phone-input" label="Phone Number" />
+                </FormControl>
+
+                <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="email-input">Email Address</InputLabel>
+                    <OutlinedInput id="email-input" label="Email Address" />
+                </FormControl>
+
+                <FormControl variant="outlined" fullWidth>
+                    <InputLabel htmlFor="msg-input">Message</InputLabel>
+                    <OutlinedInput id="msg-input" label="Message" minRows={4} multiline />
+                </FormControl>
             </div>
-        </>
-    )
+        </div>
+    );
 }
