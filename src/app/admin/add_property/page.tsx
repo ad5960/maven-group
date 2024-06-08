@@ -38,10 +38,10 @@ export default function Page() {
     }
 
     return (
-        <div className="flex w-full h-full justify-center">
-            <div className="flex flex-col items-center">
-                <p className="text-4xl font-semibold my-10">Add a Property</p>
-                <FormGroup className="mx-2 space-y-4">
+        <div className="flex justify-center">
+            <div className="w-full max-w-md p-4">
+                <p className="text-2xl sm:text-4xl font-semibold my-6 text-center">Add a Property</p>
+                <FormGroup className="space-y-4">
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="propertyType-input">Property Type</InputLabel>
                         <OutlinedInput
@@ -119,6 +119,7 @@ export default function Page() {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
+                        fullWidth
                     >
                         Submit
                     </Button>

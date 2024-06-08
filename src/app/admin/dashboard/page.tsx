@@ -36,7 +36,7 @@ export default function Page() {
             <div className="w-1/4 p-4 border-r border-gray-200">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Agents</h2>
-                    <Link href="/admin/add-agent">
+                    <Link href="/admin/add_agent">
                         <button className="px-4 py-2 bg-blue-600 text-white rounded">Add Agent</button>
                     </Link>
                 </div>
@@ -50,7 +50,7 @@ export default function Page() {
             <div className="w-3/4 p-4">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Properties</h2>
-                    <Link href="/admin/add-property">
+                    <Link href="/admin/add_property">
                         <button className="px-4 py-2 bg-blue-600 text-white rounded">Add Property</button>
                     </Link>
                 </div>

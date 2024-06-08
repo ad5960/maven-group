@@ -3,13 +3,12 @@ import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation"
-
 export default function Page() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [licenseNumber, setLicenseNumber] = useState("");
-    const router = useRouter()
+    const router = useRouter();
 
     async function handleSubmit() {
         try {
@@ -26,11 +25,12 @@ export default function Page() {
             console.error("Error adding agent:", error);
         }
     }
-    return (<>
-        <div className="flex w-full h-full justify-center">
-            <div className="flex flex-col items-center">
-                <p className="text-4xl font-semibold my-10">Add an Agent</p>
-                <FormGroup className="mx-2 space-y-4">
+
+    return (
+        <div className="flex justify-center">
+            <div className="w-full max-w-md p-4">
+                <p className="text-2xl sm:text-4xl font-semibold my-6 text-center">Add an Agent</p>
+                <FormGroup className="space-y-4">
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="name-input">Name</InputLabel>
                         <OutlinedInput
@@ -72,11 +72,12 @@ export default function Page() {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
+                        fullWidth
                     >
                         Submit
                     </Button>
                 </FormGroup>
             </div>
         </div>
-    </>)
+    );
 }

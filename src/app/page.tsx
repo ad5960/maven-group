@@ -18,10 +18,7 @@ export default function Page() {
             <br />
             <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl typing-effect-maven">ma-ven</span>
             <br />
-            <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl"> variants or less commonly known as mavin </span>
-
-            <br />
-            <span className="text-xs sm:text-base md:text-base lg:text-lg typing-effect">: One who is experienced or knowledgeable: EXPERT</span>
+            <span className="text-sm sm:text-md md:text-base lg:text-xl typing-effect">: One who is experienced or knowledgeable: EXPERT</span>
           </p>
         </div>
       </div>
