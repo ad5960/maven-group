@@ -5,10 +5,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
+    const [offer, setOffer] = useState("");
+    const [askingPrice, setAskingPrice] = useState("");
+    const [pricePerSF, setPricePerSF] = useState("");
     const [propertyType, setPropertyType] = useState("");
     const [buildingSize, setBuildingSize] = useState("");
     const [landSize, setLandSize] = useState("");
     const [yearBuilt, setYearBuilt] = useState("");
+    const [tenancy, setTenancy] = useState("");
+    const [frontage, setFrontage] = useState("");
+    const [parking, setParking] = useState("");
+    const [zoning, setZoning] = useState("");
+    const [highlights, setHighlights] = useState("");
+    const [attachments, setAttachments] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
     const [state, setState] = useState("");
@@ -18,11 +27,19 @@ export default function Page() {
     async function handleSubmit() {
         try {
             const res = await axios.post("/admin/add_property/api", {
+                offer,
+                askingPrice,
+                pricePerSF,
                 propertyType,
                 buildingSize,
                 landSize,
                 yearBuilt,
-                tenancy: "tenancy",
+                tenancy,
+                frontage,
+                parking,
+                zoning,
+                highlights: highlights.split(','),
+                downloads: { attachments: attachments.split(',') },
                 address: {
                     street,
                     city,
@@ -42,6 +59,33 @@ export default function Page() {
             <div className="w-full max-w-md p-4">
                 <p className="text-2xl sm:text-4xl font-semibold my-6 text-center">Add a Property</p>
                 <FormGroup className="space-y-4">
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="offer-input">Offer</InputLabel>
+                        <OutlinedInput
+                            id="offer-input"
+                            label="Offer"
+                            value={offer}
+                            onChange={(e) => setOffer(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="askingPrice-input">Asking Price</InputLabel>
+                        <OutlinedInput
+                            id="askingPrice-input"
+                            label="Asking Price"
+                            value={askingPrice}
+                            onChange={(e) => setAskingPrice(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="pricePerSF-input">Price per SF</InputLabel>
+                        <OutlinedInput
+                            id="pricePerSF-input"
+                            label="Price per SF"
+                            value={pricePerSF}
+                            onChange={(e) => setPricePerSF(e.target.value)}
+                        />
+                    </FormControl>
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="propertyType-input">Property Type</InputLabel>
                         <OutlinedInput
@@ -76,6 +120,60 @@ export default function Page() {
                             label="Year Built"
                             value={yearBuilt}
                             onChange={(e) => setYearBuilt(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="tenancy-input">Tenancy</InputLabel>
+                        <OutlinedInput
+                            id="tenancy-input"
+                            label="Tenancy"
+                            value={tenancy}
+                            onChange={(e) => setTenancy(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="frontage-input">Frontage</InputLabel>
+                        <OutlinedInput
+                            id="frontage-input"
+                            label="Frontage"
+                            value={frontage}
+                            onChange={(e) => setFrontage(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="parking-input">Parking</InputLabel>
+                        <OutlinedInput
+                            id="parking-input"
+                            label="Parking"
+                            value={parking}
+                            onChange={(e) => setParking(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="zoning-input">Zoning</InputLabel>
+                        <OutlinedInput
+                            id="zoning-input"
+                            label="Zoning"
+                            value={zoning}
+                            onChange={(e) => setZoning(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="highlights-input">Highlights (comma separated)</InputLabel>
+                        <OutlinedInput
+                            id="highlights-input"
+                            label="Highlights"
+                            value={highlights}
+                            onChange={(e) => setHighlights(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="attachments-input">Attachments (comma separated)</InputLabel>
+                        <OutlinedInput
+                            id="attachments-input"
+                            label="Attachments"
+                            value={attachments}
+                            onChange={(e) => setAttachments(e.target.value)}
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>

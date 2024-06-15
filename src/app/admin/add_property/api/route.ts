@@ -25,7 +25,6 @@ export async function POST(req: Request) {
 
         const id = uuidv4()
 
-        // Example: Save agent data to DynamoDB
         const params = {
             TableName: 'properties', // Replace with your DynamoDB table name
             Item: {
