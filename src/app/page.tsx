@@ -27,13 +27,13 @@ export default function Page() {
           <p className="text-3xl sm:text-4xl font-normal text-center mb-5">About Us</p>
           <div className="flex flex-col sm:flex-row justify-center items-center">
             <Image src={LANight} alt="About Us Image" width={200} height={100} className="w-full sm:w-1/2 mx-auto mb-5 sm:mr-10" />
-            <p className="text-lg sm:text-xl w-full text-center text-justify">Founded by Christopher Mavian, Maven Group is a premier commercial real estate firm rooted in Los Angeles, offering unparalleled expertise in property management, sales, leasing, and comprehensive counseling services. With a background in psychology and a track record of success, Christopher leads a dedicated team committed to delivering exceptional results and personalized solutions for clients across diverse sectors.</p>
+            <p className="text-lg sm:text-xl w-full text-center">Founded by Christopher Mavian, Maven Group is a premier commercial real estate firm rooted in Los Angeles, offering unparalleled expertise in property management, sales, leasing, and comprehensive counseling services. With a background in psychology and a track record of success, Christopher leads a dedicated team committed to delivering exceptional results and personalized solutions for clients across diverse sectors.</p>
           </div>
         </div>
         <div className="flex flex-col max-w-6xl px-5 sm:px-10 mt-10 sm:mt-20">
           <p className="text-3xl sm:text-4xl font-normal text-center mb-5">Services</p>
           <div className="flex flex-col sm:flex-row justify-center items-center">
-            <p className="text-lg sm:text-xl w-full text-center text-justify lg:mr-5 mb-5">Maven Group specializes in providing comprehensive services tailored to the diverse needs of clients in the commercial real estate market. Our expert team excels in facilitating property sales, ensuring seamless transactions and maximizing returns for sellers. Additionally, we offer dedicated landlord and tenant representation, fostering mutually beneficial relationships and facilitating successful lease agreements.</p>
+            <p className="text-lg sm:text-xl w-full text-center lg:mr-5 mb-5">Maven Group specializes in providing comprehensive services tailored to the diverse needs of clients in the commercial real estate market. Our expert team excels in facilitating property sales, ensuring seamless transactions and maximizing returns for sellers. Additionally, we offer dedicated landlord and tenant representation, fostering mutually beneficial relationships and facilitating successful lease agreements.</p>
             <Image src={LANight} alt="Services Image" width={200} height={100} className="w-full sm:w-1/2 mx-auto" />
           </div>
         </div>

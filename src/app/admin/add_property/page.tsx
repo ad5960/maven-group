@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -12,39 +12,40 @@ export default function Page() {
     const [buildingSize, setBuildingSize] = useState("");
     const [landSize, setLandSize] = useState("");
     const [yearBuilt, setYearBuilt] = useState("");
-    const [tenancy, setTenancy] = useState("");
     const [frontage, setFrontage] = useState("");
     const [parking, setParking] = useState("");
-    const [zoning, setZoning] = useState("");
-    const [highlights, setHighlights] = useState("");
     const [attachments, setAttachments] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
+    const [files, setFiles] = useState<File[]>([]);
     const router = useRouter();
 
     async function handleSubmit() {
+        const formData = new FormData();
+        formData.append("offer", offer);
+        formData.append("askingPrice", askingPrice);
+        formData.append("pricePerSF", pricePerSF);
+        formData.append("propertyType", propertyType);
+        formData.append("buildingSize", buildingSize);
+        formData.append("landSize", landSize);
+        formData.append("yearBuilt", yearBuilt);
+        formData.append("frontage", frontage);
+        formData.append("parking", parking);
+        formData.append("attachments", attachments);
+        formData.append("street", street);
+        formData.append("city", city);
+        formData.append("state", state);
+        formData.append("zipCode", zipCode);
+        files.forEach((file, index) => {
+            formData.append(`files`, file);
+        });
+
         try {
-            const res = await axios.post("/admin/add_property/api", {
-                offer,
-                askingPrice,
-                pricePerSF,
-                propertyType,
-                buildingSize,
-                landSize,
-                yearBuilt,
-                tenancy,
-                frontage,
-                parking,
-                zoning,
-                highlights: highlights.split(','),
-                downloads: { attachments: attachments.split(',') },
-                address: {
-                    street,
-                    city,
-                    state,
-                    zipCode
+            const res = await axios.post("/admin/add_property/api", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             console.log("Property added:", res.data);
@@ -123,15 +124,6 @@ export default function Page() {
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="tenancy-input">Tenancy</InputLabel>
-                        <OutlinedInput
-                            id="tenancy-input"
-                            label="Tenancy"
-                            value={tenancy}
-                            onChange={(e) => setTenancy(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="frontage-input">Frontage</InputLabel>
                         <OutlinedInput
                             id="frontage-input"
@@ -147,24 +139,6 @@ export default function Page() {
                             label="Parking"
                             value={parking}
                             onChange={(e) => setParking(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="zoning-input">Zoning</InputLabel>
-                        <OutlinedInput
-                            id="zoning-input"
-                            label="Zoning"
-                            value={zoning}
-                            onChange={(e) => setZoning(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="highlights-input">Highlights (comma separated)</InputLabel>
-                        <OutlinedInput
-                            id="highlights-input"
-                            label="Highlights"
-                            value={highlights}
-                            onChange={(e) => setHighlights(e.target.value)}
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
@@ -212,12 +186,27 @@ export default function Page() {
                             onChange={(e) => setZipCode(e.target.value)}
                         />
                     </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="files-input" >Upload Images</InputLabel>
+                        <OutlinedInput
+                           
+                            id="files-input"
+                            type="file"
+                            inputProps={{ accept: "image/*", multiple: true }}
+                            onChange={(e) => {
+                                if (e.target.files) {
+                                    setFiles(Array.from(e.target.files));
+                                }
+                            }}
+                        />
+                    </FormControl>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
                         fullWidth
+                        className=" mt-6"
                     >
                         Submit
                     </Button>

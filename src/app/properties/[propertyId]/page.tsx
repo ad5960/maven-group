@@ -3,7 +3,7 @@ import ContactForm from "../../components/contact_form";
 import Image from "next/image";
 import LANight from "../../assets/LANight.jpg";
 import Navbar from "../../components/nav";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Property from "@/app/models/property";
 import axios from "axios";
 import Footer from "@/app/components/footer";
@@ -16,40 +16,44 @@ export default function SingleProperty({
 }: {
   params: { propertyId: string };
 }) {
-  // const id  = params.propertyId;
+  const id = params.propertyId;
+  const [property, setProperty] = useState<Property | null>(null);
+  const fetchInitiated = useRef(false);
 
-  // const [property, setProperty] = useState<Property>();
+  useEffect(() => {
+    async function fetchProperty() {
+      if (id && !fetchInitiated.current) {
+        fetchInitiated.current = true;
+        try {
+          const res = await axios.get(`/properties/${id}/api`);
+          setProperty(res.data);
+          console.log("Fetched property:", res.data);
+        } catch (error) {
+          console.error("Error fetching property:", error);
+        }
+      }
+    }
 
-  // console.log("Getting id: ", id);
-  // useEffect(() => {
-  //     async function fetchProperty() {
-  //         if (id) {
-  //             const res = await axios.get(`/properties/${id}/api`);
-  //             setProperty(res.data);
-  //         }
-  //     }
+    fetchProperty();
+  }, [id]);
 
-  //     fetchProperty();
+  if (!property) {
+    return <div>Loading...</div>;
+  }
 
-  // }, [id]);
 
-  // if (!property) {
-  //     return <div>Loading...</div>;
-  // }
-
-  // console.log(property);
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
   const SLIDE_COUNT = 5;
   const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
 
   const data = [
-    { key: "Price", value: "2000" },
-    { key: "Offer", value: "For Lease" },
-    { key: "Property Type", value: "Warehouse" },
-    { key: "Building Size", value: "9,600 SF" },
-    { key: "Land Size", value: "10,945 SF" },
-    { key: "Year Built", value: "1957" },
-    { key: "PARKING", value: "23 Spots" },
+    { key: "Price", value: property.askingPrice },
+    { key: "Offer", value: property.offer },
+    { key: "Property Type", value: property.propertyType },
+    { key: "Building Size", value: property.buildingSize },
+    { key: "Land Size", value: property.landSize },
+    { key: "Year Built", value: property.yearBuilt },
+    { key: "PARKING", value: property.parking },
   ];
 
   return (
@@ -57,10 +61,10 @@ export default function SingleProperty({
       <Navbar />
       <div className=" flex justify-center mt-32 font-bold font">
         <div className="w-1/2 mb-8">
-          <h5 className=" text-lg mb-3 text-red-500">For Lease</h5>
-          <h1 className=" text-4xl font-light">1015 Fort Salonga Rd</h1>
-          <h1 className=" text-4xl font-light">Northport, NY</h1>
-          <h1 className=" text-4xl font-light">11768</h1>
+          <h5 className=" text-lg mb-3 text-red-500">{property.offer }</h5>
+          <h1 className=" text-4xl font-light">{property.address.street}</h1>
+          <h1 className=" text-4xl font-light">{property.address.city}, {property.address.state }</h1>
+          <h1 className=" text-4xl font-light">{property.address.zipCode}</h1>
         </div>
       </div>
       <div className="flex  justify-center">
