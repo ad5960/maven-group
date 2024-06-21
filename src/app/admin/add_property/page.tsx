@@ -187,19 +187,19 @@ export default function Page() {
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="files-input" >Upload Images</InputLabel>
-                        <OutlinedInput
-                           
-                            id="files-input"
-                            type="file"
-                            inputProps={{ accept: "image/*", multiple: true }}
-                            onChange={(e) => {
-                                if (e.target.files) {
-                                    setFiles(Array.from(e.target.files));
-                                }
-                            }}
-                        />
-                    </FormControl>
+    <InputLabel htmlFor="files-input">Upload Images</InputLabel>
+    <OutlinedInput
+        id="files-input"
+        type="file"
+        inputProps={{ accept: "image/*", multiple: true }}
+        onChange={(e) => {
+            const target = e.target as HTMLInputElement;
+            if (target.files) {
+                setFiles(Array.from(target.files));
+            }
+        }}
+    />
+</FormControl>
                     <Button
                         type="submit"
                         variant="contained"

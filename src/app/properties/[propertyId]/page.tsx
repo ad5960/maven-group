@@ -55,7 +55,6 @@ export default function SingleProperty({
     { key: "Year Built", value: property.yearBuilt },
     { key: "PARKING", value: property.parking },
   ];
-
   return (
     <>
       <Navbar />
