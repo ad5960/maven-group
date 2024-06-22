@@ -12,12 +12,12 @@ import {
 } from './carouselArrowButtons'
 import { DotButton, useDotButton } from './carouselDotButtons'
 import Autoplay from 'embla-carousel-autoplay'
-
+import Image from 'next/image'
 
 const TWEEN_FACTOR_BASE = 0.2
 
 type PropType = {
-  slides: number[]
+  slides: string[] // Updated to accept string array for image URLs
   options?: EmblaOptionsType
 }
 
@@ -37,7 +37,6 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     onPrevButtonClick,
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
-  
 
   const setTweenNodes = useCallback((emblaApi: EmblaCarouselType): void => {
     tweenNodes.current = emblaApi.slideNodes().map((slideNode) => {
@@ -108,14 +107,16 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     <div className="embla">
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
-          {slides.map((index) => (
+          {slides.map((url, index) => (
             <div className="embla__slide" key={index}>
               <div className="embla__parallax">
                 <div className="embla__parallax__layer">
-                  <img
-                    className="embla__slide__img embla__parallax__img"
-                    src={`https://picsum.photos/600/350?v=${index}`}
-                    alt="Your alt text"
+                  <Image
+                    src={url}
+                    alt={`Property Image ${index + 1}`}
+                    width={600} // Adjust width as needed
+                    height={350} // Adjust height as needed
+                    layout="responsive" // Responsive layout
                   />
                 </div>
               </div>

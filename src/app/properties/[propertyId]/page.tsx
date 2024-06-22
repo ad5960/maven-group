@@ -1,7 +1,4 @@
 "use client";
-import ContactForm from "../../components/contact_form";
-import Image from "next/image";
-import LANight from "../../assets/LANight.jpg";
 import Navbar from "../../components/nav";
 import { useEffect, useRef, useState } from "react";
 import Property from "@/app/models/property";
@@ -10,6 +7,7 @@ import Footer from "@/app/components/footer";
 import { EmblaOptionsType } from "embla-carousel";
 import EmblaCarousel from "@/app/components/carousel";
 import { CardComponent } from "@/app/components/card";
+import Image from "next/image";
 
 export default function SingleProperty({
   params,
@@ -43,8 +41,6 @@ export default function SingleProperty({
 
 
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
-  const SLIDE_COUNT = 5;
-  const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
 
   const data = [
     { key: "Price", value: property.askingPrice },
@@ -55,6 +51,7 @@ export default function SingleProperty({
     { key: "Year Built", value: property.yearBuilt },
     { key: "PARKING", value: property.parking },
   ];
+  console.log(property.imageUrls);
   return (
     <>
       <Navbar />
@@ -67,7 +64,7 @@ export default function SingleProperty({
         </div>
       </div>
       <div className="flex  justify-center">
-        <EmblaCarousel slides={SLIDES} options={OPTIONS} />
+        <EmblaCarousel slides={property.imageUrls} options={OPTIONS} />
       </div>
 
       <div className="w-full flex justify-center my-8">
@@ -101,7 +98,20 @@ export default function SingleProperty({
                       <CardComponent/>
                   </div>
         </div>
-          </section>
+      </section>
+      <div>
+        {property.imageUrls.map((url, index) => (
+          <div key={index}>
+            <Image
+              src={url}
+              alt={`Property Image ${index + 1}`}
+              width={500} // Specify the width of the image
+              height={300} // Specify the height of the image
+              layout="responsive" // Responsive layout
+            />
+          </div>
+        ))}
+      </div>
           <Footer/>
     </>
   );

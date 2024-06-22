@@ -15,6 +15,7 @@ export default interface Property {
     buildingSize: string;        // Building size in square feet
     landSize: string;            // Land size in square feet
     imageUrl: string;
+    imageUrls: string[];
     yearBuilt: number;           // Year the property was built
     frontage: string;            // Frontage along a street
     parking: string;             // Parking details
