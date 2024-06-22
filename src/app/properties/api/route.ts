@@ -3,6 +3,7 @@ import Property, { OfferType } from "@/app/models/property";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid"
+import AWS from 'aws-sdk';
 export const config = {
     api: {
         bodyParser: true
@@ -11,16 +12,22 @@ export const config = {
     maxDuration: 5,
 }
 
+const s3 = new AWS.S3({
+    region: process.env.AWS_REGION // Replace with your AWS region
+});
+
+const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME as string;
+
 // POST /api/agents
 export async function POST(req: Request) {
 
     try {
         // Extract agent data from request body
-        const { offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
+        const { offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt,  frontage, parking,  downloads: { attachments },
             address: { street, city, state, zipCode }, }: Property = await req.json();
 
         // Example: Perform validation if needed
-        if (!offer || !askingPrice || !pricePerSF || !propertyType || !buildingSize || !landSize || !yearBuilt || !tenancy || !frontage || !parking || !zoning || highlights.length === 0 || attachments.length === 0 || !street || !city || !state || !zipCode) {
+        if (!offer || !askingPrice || !pricePerSF || !propertyType || !buildingSize || !landSize || !yearBuilt || !frontage || !parking || attachments.length === 0 || !street || !city || !state || !zipCode) {
             return NextResponse.json({ error: 'Incomplete property data' });
         }
 
@@ -30,7 +37,7 @@ export async function POST(req: Request) {
         const params = {
             TableName: 'properties', // Replace with your DynamoDB table name
             Item: {
-                id, offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt, tenancy, frontage, parking, zoning, highlights, downloads: { attachments },
+                id, offer, askingPrice, pricePerSF, propertyType, buildingSize, landSize, yearBuilt, downloads: { attachments },
                 address: { street, city, state, zipCode },
             }
         };
@@ -53,8 +60,9 @@ export async function GET(req: Request) {
     const location = searchParams.get('location');
     const propertyType = searchParams.get('type');
     const offerType = searchParams.get('offerType');
+
     try {
-        // Example: Retrieve all agents from DynamoDB
+        // Example: Retrieve all properties from DynamoDB
         const params = {
             TableName: 'properties', // Replace with your DynamoDB table name
         };
@@ -77,12 +85,48 @@ export async function GET(req: Request) {
             properties = properties.filter(property => property.offer === offerType);
         }
 
-        // Return the list of agents
+        // Fetch the first image URL for each property
+        for (let property of properties) {
+            if (property.imageUrl) {
+                const fullImageUrl = property.imageUrl;
+                const imageFolder = new URL(fullImageUrl).pathname.substring(1);
+
+                const imageKeys = await listObjectsInFolder(imageFolder);
+
+                if (imageKeys.length === 0) {
+                    console.warn("No images found in folder:", imageFolder);
+                } else {
+                    console.log("Found image keys:", imageKeys);
+
+                    const firstImageUrl = s3.getSignedUrl('getObject', {
+                        Bucket: BUCKET_NAME,
+                        Key: imageKeys[0], // Get the first image key
+                        Expires: 60 * 60 // 1 hour
+                    });
+
+                    property.imageUrls = [firstImageUrl]; // Assign only the first image URL
+                    console.log("Generated first image URL for property:", property.id, firstImageUrl);
+                }
+            }
+        }
+
+        // Return the list of properties
         return NextResponse.json(properties);
     } catch (error) {
         console.error('Error retrieving properties:', error);
         return NextResponse.json({ error: 'Failed to retrieve properties' });
     }
+}
+
+
+async function listObjectsInFolder(folder: string): Promise<string[]> {
+    const params = {
+        Bucket: BUCKET_NAME,
+        Prefix: folder,
+    };
+
+    const response = await s3.listObjectsV2(params).promise();
+    return response.Contents ? response.Contents.map(item => item.Key!) : [];
 }
 
 // GET /api/properties/:id

@@ -1,7 +1,4 @@
 import dynamodb from "@/app/lib/dynamodb";
-import Property from "@/app/models/property";
-import axios from "axios";
-import { log } from "console";
 import { NextResponse } from "next/server";
 import AWS from 'aws-sdk';
 
@@ -34,9 +31,9 @@ export async function GET(_req: Request, {params}: {params: {propertyId: string}
         // Extract property details from the response data
     const property = data.Item;
 
-    // Assuming imageUrl is a string with the S3 folder path
-    const fullImageUrl = property.imageUrl; // e.g., "https://mavenimages.s3.amazonaws.com/11_Pratt_St_Allston_Massachusetts_02134/"
-    const imageFolder = new URL(fullImageUrl).pathname.substring(1); // This removes the leading '/' from the path
+
+    const fullImageUrl = property.imageUrl;
+    const imageFolder = new URL(fullImageUrl).pathname.substring(1);
     console.log("Listing objects in folder:", imageFolder);
 
     const imageKeys = await listObjectsInFolder(imageFolder);

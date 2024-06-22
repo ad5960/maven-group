@@ -1,8 +1,5 @@
 "use client"
-import Image from "next/image";
-import Link from "next/link";
 import Navbar from "../components/nav";
-import SantaMonica from "../assets/SantaMonica.jpg";
 import PropertyCard from "../components/property_card";
 import { BlackTag } from "../components/tag";
 import { useEffect, useState } from "react";
@@ -47,7 +44,6 @@ export default function Page() {
     const handleUpdate = () => {
         fetchProperties();
     };
-
     return (
         <>
             <Navbar />
@@ -102,7 +98,7 @@ export default function Page() {
                         <PropertyCard
                             key={property.id}
                             name={property.frontage}
-                            imageUrl=""
+                            imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
                             link={`/properties/${property.id}`}
                             offer={property.offer}
                         />

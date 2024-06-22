@@ -51,7 +51,7 @@ export default function SingleProperty({
     { key: "Year Built", value: property.yearBuilt },
     { key: "PARKING", value: property.parking },
   ];
-  console.log(property.imageUrls);
+  console.log(property.imageUrls[0]);
   return (
     <>
       <Navbar />
@@ -99,19 +99,6 @@ export default function SingleProperty({
                   </div>
         </div>
       </section>
-      <div>
-        {property.imageUrls.map((url, index) => (
-          <div key={index}>
-            <Image
-              src={url}
-              alt={`Property Image ${index + 1}`}
-              width={500} // Specify the width of the image
-              height={300} // Specify the height of the image
-              layout="responsive" // Responsive layout
-            />
-          </div>
-        ))}
-      </div>
           <Footer/>
     </>
   );
