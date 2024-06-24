@@ -23,7 +23,7 @@ export default function Page() {
 
     const fetchProperties = async () => {
         try {
-            const res = await axios.get("/properties/api", {
+            const res = await axios.get("/api/properties/", {
                 params: {
                     location: location === "option1" ? undefined : location,
                     type: propertyType === "option1" ? undefined : propertyType,
