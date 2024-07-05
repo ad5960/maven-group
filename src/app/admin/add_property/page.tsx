@@ -43,7 +43,7 @@ export default function Page() {
         });
 
         try {
-            const res = await axios.post("/admin/add_property/api", formData, {
+            const res = await axios.post("/api/properties/", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

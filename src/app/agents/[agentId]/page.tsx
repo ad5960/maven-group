@@ -12,7 +12,7 @@ export default function AgentCard({params}: {params: {agentId: string}}) {
     useEffect(() => {
         async function fetchAgent() {
             if (id) {
-                const res = await axios.get(`/agents/${id}/api`);
+                const res = await axios.get(`/api/agents/${id}`);
                 setAgent(res.data)
             }
             

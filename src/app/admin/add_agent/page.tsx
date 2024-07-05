@@ -12,7 +12,7 @@ export default function Page() {
 
     async function handleSubmit() {
         try {
-            const res = await axios.post("/admin/add_agent/api", {
+            const res = await axios.post("/api/agents/", {
                 "name": name,
                 "email": email,
                 "phoneNumber": phoneNumber,

@@ -6,7 +6,7 @@ const s3 = new AWS.S3({
     region: process.env.AWS_REGION // Replace with your AWS region
   });
 
-export async function GET(_req: Request, {params}: {params: {propertyId: string}}) {
+export async function GET(_req: Request, { params }: { params: { propertyId: string } }) {
     try {
         if (!params.propertyId) {
             return NextResponse.json({ error: 'Property ID is required' });

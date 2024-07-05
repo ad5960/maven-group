@@ -20,7 +20,7 @@ export default function Page() {
 
     const fetchProperties = async () => {
         try {
-            const res = await axios.get("/properties/api", {
+            const res = await axios.get("/api/properties/", {
                 params: {
                     location: location === "option1" ? undefined : location,
                     type: propertyType === "option1" ? undefined : propertyType,
@@ -52,10 +52,10 @@ export default function Page() {
                     <p className="text-2xl md:text-4xl font-bold text-center">Properties</p>
                 </span>
             </div>
-            <div className="flex w-full h-20 justify-center items-center my-10">
-                <div className="flex flex-col md:flex-row w-11/12 md:w-2/3 h-full bg-slate-300 justify-around items-center rounded-lg p-2 md:p-0">
+            <div className="flex w-full justify-center items-center my-10">
+                <div className="flex flex-col lg:flex-row w-full lg:w-2/3 bg-slate-300 justify-around items-center rounded-lg p-2">
                     <select
-                        className="w-full md:w-1/3 h-10 md:h-1/2 mx-2 border border-slate-400 rounded-lg"
+                        className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 border border-slate-400 rounded-lg"
                         value={location}
                         onChange={handleLocationChange}
                     >
@@ -65,7 +65,7 @@ export default function Page() {
                         ))}
                     </select>
                     <select
-                        className="w-full md:w-1/3 h-10 md:h-1/2 mx-2 border border-slate-400 rounded-lg"
+                        className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 border border-slate-400 rounded-lg"
                         value={propertyType}
                         onChange={handlePropertyTypeChange}
                     >
@@ -75,7 +75,7 @@ export default function Page() {
                         ))}
                     </select>
                     <button
-                        className="w-full md:w-1/3 h-10 md:h-1/2 mx-2 bg-slate-700 text-white rounded-lg"
+                        className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 bg-slate-700 text-white rounded-lg"
                         onClick={handleUpdate}
                     >
                         Update

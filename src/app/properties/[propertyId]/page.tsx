@@ -27,7 +27,7 @@ export default function SingleProperty({
       if (id && !fetchInitiated.current) {
         fetchInitiated.current = true;
         try {
-          const res = await axios.get(`/properties/${id}/api`);
+          const res = await axios.get(`/api/properties/${id}`);
           setProperty(res.data);
           console.log("Fetched property:", res.data);
         } catch (error) {
@@ -77,14 +77,57 @@ export default function SingleProperty({
   };
 
   return (
-    <>
+    // <>
+    //   <Navbar />
+    //   <div className="flex justify-center mt-32 ml-8 font-bold">
+    //     <div className="w-full md:w-1/2 mb-8">
+    //       <h5 className="text-lg mb-3 text-red-500">{property.offer}</h5>
+    //       <h1 className="text-3xl md:text-4xl font-light">{property.address.street}</h1>
+    //       <h1 className="text-3xl md:text-4xl font-light">{property.address.city}, {property.address.state}</h1>
+    //       <h1 className="text-3xl md:text-4xl font-light">{property.address.zipCode}</h1>
+    //     </div>
+    //   </div>
+    //   <div className="flex mx-2 justify-center">
+    //     <EmblaCarousel slides={SLIDES} options={OPTIONS} />
+    //   </div>
+
+    //   <div className="w-full flex justify-center my-8">
+    //     <div className="w-full mx-2 md:w-1/2 border-t border-gray-400"></div>
+    //   </div>
+    //   <section className="main-content flex">
+    //     <div className="info-section w-full md:w-3/5 sm:w-1/2 justify-center overflow-x-hidden">
+    //       <h1 className="text-4xl pt-5 font-bold">Description</h1>
+    //       <p className="pt-5 font-light mb-10">
+    //         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vitae a iste similique dolor optio veniam laudantium unde adipisci doloribus illo?
+    //       </p>
+    //       <h1 className="text-4xl font-bold pb-5">Details</h1>
+    //       <ul>
+    //         {data.map((item, index) => (
+    //           <li key={index} className="grid grid-cols-3 gap-4 py-2">
+    //             <span className="font-semibold">{item.key}</span>
+    //             <span>{item.value}</span>
+    //           </li>
+    //         ))}
+    //         <h1 className="text-4xl font-bold pb-5 mt-10">Download</h1>
+    //       </ul>
+    //     </div>
+    //     <div className="side-content w-full md:w-2/5 mt-10 md:mt-0">
+    //       <h1 className="text-3xl font-semibold pb-5 mt-10 text-center">Contact An Agent</h1>
+    //       <div className="contact-section">
+    //         <CardComponent/>
+    //       </div>
+    //     </div>
+    //   </section>
+    //   <Footer/>
+    // </>
+    <div className="relative">
       <Navbar />
-      <div className=" flex justify-center mt-32 font-bold font">
-        <div className="w-1/2 mb-8">
-          <h5 className=" text-lg mb-3 text-red-500">{property.offer }</h5>
-          <h1 className=" text-4xl font-light">{property.address.street}</h1>
-          <h1 className=" text-4xl font-light">{property.address.city}, {property.address.state }</h1>
-          <h1 className=" text-4xl font-light">{property.address.zipCode}</h1>
+      <div className="flex justify-center mt-32 ml-8 font-bold ">
+        <div className="w-full md:w-1/2 mb-8">
+          <h5 className="text-lg mb-3 text-red-500">{property.offer}</h5>
+          <h1 className="text-3xl md:text-4xl font-light">{property.address.street}</h1>
+          <h1 className="text-3xl md:text-4xl font-light">{property.address.city}, {property.address.state}</h1>
+          <h1 className="text-3xl md:text-4xl font-light">{property.address.zipCode}</h1>
         </div>
       </div>
       <div className="flex  justify-center">
@@ -92,83 +135,35 @@ export default function SingleProperty({
       </div>
 
       <div className="w-full flex justify-center my-8">
-        <div className="w-1/2 border-t border-gray-400"></div>
+        <div className="w-full mx-2 md:w-2/3 border-t border-gray-400"></div>
       </div>
-      <section className="main-content flex">
+
+      <section className="main-content flex flex-col md:flex-row">
         <div className="info-section">
-          <div className="">
-            <h1 className=" text-4xl pt-5 font-bold">Description</h1>
-            <p className="pt-5 font-light mb-10">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vitae a
-              iste similique dolor optio veniam laudantium unde adipisci
-              doloribus illo?
-            </p>
-            <h1 className="text-4xl font-bold pb-5">Details</h1>
-            <ul>
-              {data.map((item, index) => (
-                <li key={index} className="grid grid-cols-3 py-2">
-                  <span className="font-semibold">{item.key}</span>
-                  <span>{item.value}</span>
-                </li>
-              ))}
-              <h1 className="text-4xl font-bold pb-5 mt-10">Download</h1>
-
-            </ul>
+          <h1 className="text-4xl pt-5 font-bold">Description</h1>
+          <p className="pt-5 font-light mb-10">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae a iste similique dolor optio veniam laudantium unde adipisci doloribus illo?
+          </p>
+          <h1 className="text-4xl font-bold pb-5">Details</h1>
+          <ul>
+            {data.map((item, index) => (
+              <li key={index} className="grid grid-cols-3 gap-4 py-2">
+                <span className="font-semibold">{item.key}</span>
+                <span>{item.value}</span>
+              </li>
+            ))}
+          </ul>
+          <h1 className="text-4xl font-bold pb-5 mt-10">Download</h1>
+        </div>
+        <div className="side-content w-full md:w-2/5 mt-10 md:mt-0 px-4 md:px-0 md:mx-8">
+          <h1 className="text-3xl font-semibold pb-5 mt-10 text-center">Contact An Agent</h1>
+          <div className="contact-section">
+            <CardComponent />
           </div>
         </div>
-        <div className=" side-content mt-10">
-                  <h1 className="text-3xl font-semibold pb-5 mt-10 text-center">Contact An Agent</h1>
-                  <div className="contact-section">
-                      <CardComponent/>
-                  </div>
-        </div>
-
-
-        
       </section>
-      {/* <div>
-        <h1>Contact Us</h1>
-      {submitted ? (
-        <p>Thank you for your message. We will get back to you soon.</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="name">Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="message">Message</label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-            ></textarea>
-          </div>
-          <button type="submit">Submit</button>
-        </form>
-      )}
-        </div> */}
-          <Footer/>
-    </>
+
+      <Footer />
+    </div>
   );
 }
