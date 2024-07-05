@@ -96,7 +96,6 @@ export async function GET(req: Request) {
                 if (imageKeys.length === 0) {
                     console.warn("No images found in folder:", imageFolder);
                 } else {
-                    console.log("Found image keys:", imageKeys);
 
                     const firstImageUrl = s3.getSignedUrl('getObject', {
                         Bucket: BUCKET_NAME,
@@ -105,7 +104,6 @@ export async function GET(req: Request) {
                     });
 
                     property.imageUrls = [firstImageUrl]; // Assign only the first image URL
-                    console.log("Generated first image URL for property:", property.id, firstImageUrl);
                 }
             }
         }
@@ -127,42 +125,4 @@ async function listObjectsInFolder(folder: string): Promise<string[]> {
 
     const response = await s3.listObjectsV2(params).promise();
     return response.Contents ? response.Contents.map(item => item.Key!) : [];
-}
-
-// GET /api/properties/:id
-export async function getById(req: Request) {
-    console.log("Landed in getById method!")
-    try {
-        const reqUrl = req.url.split("/");
-        const id = reqUrl[reqUrl.length - 1]
-        console.log("id: ", id);
-        // Check if ID is provided
-        if (!id) {
-            return NextResponse.json({ error: 'Property ID is required' });
-        }
-
-        // Retrieve property details from DynamoDB based on ID
-        const params = {
-            TableName: 'properties', // Replace with your DynamoDB table name
-            Key: {
-                id: id.toString(),
-            },
-        };
-
-        const data = await dynamodb.get(params).promise();
-
-        // Check if property exists
-        if (!data.Item) {
-            return NextResponse.json({ error: 'Property not found' });
-        }
-
-        // Extract property details from the response data
-        const property: Property = data.Item as Property;
-
-        // Return the property details
-        NextResponse.json(property);
-    } catch (error) {
-        console.error('Error retrieving property:', error);
-        NextResponse.json({ error: 'Failed to retrieve property' });
-    }
 }
