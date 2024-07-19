@@ -34,14 +34,12 @@ export async function GET(_req: Request, { params }: { params: { propertyId: str
 
     const fullImageUrl = property.imageUrl;
     const imageFolder = new URL(fullImageUrl).pathname.substring(1);
-    console.log("Listing objects in folder:", imageFolder);
 
     const imageKeys = await listObjectsInFolder(imageFolder);
 
     if (imageKeys.length === 0) {
       console.warn("No images found in folder:", imageFolder);
     } else {
-      console.log("Found image keys:", imageKeys);
     }
 
     const imageUrls = imageKeys.map(key => {

@@ -50,7 +50,7 @@ export function CardComponent() {
       closeModal();
       alert('Email sent successfully');
     } catch (error) {
-      alert('Failed to send email');
+      alert('Failed to send email bc');
     }
   };
 
