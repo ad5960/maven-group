@@ -2,7 +2,7 @@ export const images = {
     remotePatterns: [
         {
             protocol: 'https',
-            hostname: 'mavenimages.s3.amazonaws.com',
+            hostname: 'd2hfeqecnq2ysj.cloudfront.net',
             pathname: '**',
         },
     ],

@@ -22,6 +22,7 @@ export default function SingleProperty({
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  
   useEffect(() => {
     async function fetchProperty() {
       if (id && !fetchInitiated.current) {
@@ -29,7 +30,7 @@ export default function SingleProperty({
         try {
           const res = await axios.get(`/api/properties/${id}`);
           setProperty(res.data);
-          console.log("Fetched property:", res.data);
+          console.log("Fetched property:hahaha", res.data);
         } catch (error) {
           console.error("Error fetching property:", error);
         }
