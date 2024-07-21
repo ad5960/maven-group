@@ -14,7 +14,7 @@ interface BlackTagProps {
 export function Tag({ offerType }: TagProps) {
     return (
         <div className="absolute top-0 left-0 ml-2 mt-2 z-10">
-            <div className="px-2 py-1 bg-white opacity-100 rounded-lg flex justify-center items-center">
+            <div className="px-2 py-0.5 bg-white opacity-100 rounded-lg">
                 <p className="text-black text-sm font-bold">{offerType}</p>
             </div>
         </div>

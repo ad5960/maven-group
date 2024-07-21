@@ -77,8 +77,7 @@ export default function Page() {
                     <button
                         className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 bg-slate-700 text-white rounded-lg"
                         onClick={handleUpdate}
-                    >
-                        Update
+                    > Update
                     </button>
                 </div>
             </div>
@@ -95,12 +94,15 @@ export default function Page() {
             <div className="flex justify-center items-center my-8">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-11/12 md:w-2/3">
                     {properties.map(property => (
+
+                        
                         <PropertyCard
                             key={property.id}
                             name={property.frontage}
                             imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
                             link={`/properties/${property.id}`}
                             offer={property.offer}
+                            price={property.offer === "For Sale" || property.offer === "Sold" ? property.askingPrice : property.offer === "For Lease" ? property.pricePerSF : property.askingPrice + " or " + property.pricePerSF}
                         />
                     ))}
                 </div>

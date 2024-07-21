@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import AWS from "aws-sdk";
 
 const s3 = new AWS.S3({
-  region: process.env.AWS_REGION, // Replace with your AWS region
+  region: process.env.AWS_REGION,
 });
 
 export async function GET(
@@ -17,7 +17,7 @@ export async function GET(
 
     // Retrieve property details from DynamoDB based on ID
     const parameter = {
-      TableName: "properties", // Replace with your DynamoDB table name
+      TableName: "properties",
       Key: {
         id: params.propertyId.toString(),
       },
