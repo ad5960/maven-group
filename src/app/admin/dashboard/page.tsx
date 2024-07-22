@@ -61,8 +61,7 @@ export default function Page() {
                             name={property.frontage}
                             imageUrl=""
                             link={`/properties/${property.id}`}
-                            offer={property.offer}
-                        />
+                            offer={property.offer} price={''}                        />
                     ))}
                 </div>
             </div>

@@ -16,6 +16,7 @@ export default function Page() {
 
     useEffect(() => {
         fetchProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [offerType]);
 
     const fetchProperties = async () => {

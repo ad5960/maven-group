@@ -40,11 +40,11 @@ async function uploadFilesToS3(files: File[], folderName: string) {
     return fileUrls;
 }
 
-export const config = {
-    api: {
-        bodyParser: false, // Disable Next.js body parsing
-    },
-};
+// export const config = {
+//     api: {
+//         bodyParser: false, // Disable Next.js body parsing
+//     },
+// };
 
 // POST function for adding new property
 export async function POST(req: Request) {

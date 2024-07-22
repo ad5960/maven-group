@@ -49,7 +49,6 @@ export async function GET(
     });
 
     property.imageUrls = imageUrls;
-    console.log("Generated image URLs:", imageUrls);
 
     // Return the property details
     return NextResponse.json(property);

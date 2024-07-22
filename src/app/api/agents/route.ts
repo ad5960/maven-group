@@ -3,13 +3,13 @@ import Agent from "@/app/models/agent";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid"
-export const config = {
-    api: {
-        bodyParser: true
-    },
-    // Specifies the maximum allowed duration for this function to execute (in seconds)
-    maxDuration: 5,
-}
+// export const config = {
+//     api: {
+//         bodyParser: true
+//     },
+//     // Specifies the maximum allowed duration for this function to execute (in seconds)
+//     maxDuration: 5,
+// }
 
 // POST /api/agents
 export async function POST(req: Request) {
