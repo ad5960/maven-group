@@ -110,10 +110,12 @@ export async function GET(req: Request) {
     const location = searchParams.get('location');
     const propertyType = searchParams.get('type');
     const offerType = searchParams.get('offerType');
+    const limit = searchParams.get('limit');
     try {
         
         const params = {
-            TableName: 'properties', 
+            TableName: 'properties',
+            Limit: limit ? parseInt(limit) : undefined,
         };
 
         const data = await dynamodb.scan(params).promise();
@@ -151,6 +153,7 @@ export async function GET(req: Request) {
                         }
                     }
                 }
+
         // Return the list of properties
         return NextResponse.json(properties);
     } catch (error) {

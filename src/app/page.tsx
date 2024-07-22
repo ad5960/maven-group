@@ -1,10 +1,47 @@
+"use client"
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./components/nav";
 import Beach from "./assets/beach.jpg"
 import Footer from "./components/footer";
+import { useEffect, useState } from "react";
+import Property from "./models/property";
+import axios from "axios";
+import PropertyCard from "./components/property_card";
 
 export default function Page() {
+
+
+  const [properties, setProperties] = useState<Property[]>([]);
+  
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const res = await axios.get("/api/properties/", {
+          params: {
+            limit: 5
+          }
+        });
+        console.log("Response data:", res.data);
+        setProperties(res.data);
+        localStorage.setItem('properties', JSON.stringify(res.data)); // Store in local storage
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
+
+    // Check if properties are already in local storage
+    const cachedProperties = localStorage.getItem('properties');
+    if (cachedProperties) {
+      console.log("found in cache")
+      setProperties(JSON.parse(cachedProperties));
+    } else {
+      console.log("not found in cache")
+      fetchProperties();
+    }
+  }, []);
+
+
   return (
     <div className="relative">
       <Navbar />
@@ -21,32 +58,26 @@ export default function Page() {
           </p>
         </div>
       </div>
-      
-      <div className="flex flex-col justify-center items-center py-10 sm:py-20">
-        <div className="flex flex-col max-w-6xl px-5 sm:px-10">
-          <div className="flex flex-col sm:flex-row justify-center items-center">
-            <Image src={Beach} alt="About Us Image" width={400} height={200} className="w-full sm:w-1/2 mx-auto mb-5 sm:mr-10" />
-            <div className="w-full sm:w-1/2 text-center sm:text-left">
-              <p className="text-3xl sm:text-4xl font-normal mb-5">About Us</p>
-              <p className="text-lg sm:text-xl text-justify">
-                Founded by Christopher Mavian, Maven Group is a premier commercial real estate firm rooted in Los Angeles, offering unparalleled expertise in property management, sales, leasing, and comprehensive counseling services. With a background in psychology and a track record of success, Christopher leads a dedicated team committed to delivering exceptional results and personalized solutions for clients across diverse sectors.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col max-w-6xl px-5 sm:px-10 mt-10 sm:mt-20">
-          <div className="flex flex-col sm:flex-row justify-center items-center">
-            <Image src={Beach} alt="Services Image" width={400} height={200} className="w-full sm:w-1/2 mx-auto order-none sm:order-1" />
-
-            <div className="w-full sm:w-1/2 text-center sm:text-left lg:mr-5 mb-5">
-              <p className="text-3xl sm:text-4xl font-normal my-5">Services</p>
-              <p className="text-lg sm:text-xl text-justify">
-                Maven Group specializes in providing comprehensive services tailored to the diverse needs of clients in the commercial real estate market. Our expert team excels in facilitating property sales, ensuring seamless transactions and maximizing returns for sellers. Additionally, we offer dedicated landlord and tenant representation, fostering mutually beneficial relationships and facilitating successful lease agreements.
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className=" flex justify-center items-center text-3xl mt-10">
+        <h1>Properties</h1>
       </div>
+      <div className="flex justify-center items-center mt-10">
+        
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
+                    {properties.map(property => (
+
+                        
+                        <PropertyCard
+                            key={property.id}
+                            name={property.frontage}
+                            imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
+                            link={`/properties/${property.id}`}
+                            offer={property.offer}
+                            price={property.offer === "For Sale" || property.offer === "Sold" ? property.askingPrice : property.offer === "For Lease" ? property.pricePerSF : property.askingPrice + " or " + property.pricePerSF}
+                        />
+                    ))}
+                </div>
+            </div>
       <Footer />
     </div>
   );

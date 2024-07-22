@@ -25,6 +25,7 @@ export default function Page() {
                     location: location === "option1" ? undefined : location,
                     type: propertyType === "option1" ? undefined : propertyType,
                     offerType: offerType === OfferType.All ? undefined : offerType,
+                    
                 },
             });
             setProperties(res.data);
