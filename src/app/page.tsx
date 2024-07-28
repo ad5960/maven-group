@@ -76,8 +76,21 @@ export default function Page() {
                             price={property.offer === "For Sale" || property.offer === "Sold" ? property.askingPrice : property.offer === "For Lease" ? property.pricePerSF : property.askingPrice + " or " + property.pricePerSF}
                         />
                     ))}
-                </div>
-            </div>
+        </div>
+      </div>
+      <div className="flex justify-center mt-10 mb-20">
+      <div className="center">
+          <Link href="/properties">
+            <button className="btn">
+    <svg width="180px" height="60px" viewBox="0 0 180 60" className="border button-svg">
+      <polyline points="179,1 179,59 1,59 1,1 179,1" className="bg-line" />
+      <polyline points="179,1 179,59 1,59 1,1 179,1" className="hl-line" />
+    </svg>
+    <span>View More</span>
+          </button>
+          </Link>
+</div>
+      </div>
       <Footer />
     </div>
   );

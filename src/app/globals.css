@@ -314,10 +314,58 @@ body {
   /* Adjustments for medium screens and up */
   .side-content {
     width: 360px;
-    /* Fixed width as originally set for larger screens */
+
   }
 }
 
-/* .contact-image{
-  border-radius: 100%;
-} */
+.center {
+  width: 180px;
+  height: 60px;
+  position: absolute;
+}
+
+.btn {
+  width: 180px;
+  height: 60px;
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #000000;
+  outline: none;
+  transition: 1s ease-in-out;
+  color: #000000;
+  position: relative;
+  
+}
+
+.button-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  fill: none;
+  stroke: #000000;
+  stroke-dasharray: 150 480;
+  stroke-dashoffset: 150;
+  transition: 1s ease-in-out;
+}
+
+.btn:hover {
+  transition: 1s ease-in-out;
+  background: #000000;
+  color: #ffffff;
+}
+
+.btn:hover svg {
+  stroke-dashoffset: -480;
+  stroke: #ffffff;
+}
+
+.btn span {
+  color: inherit;
+  font-size: 18px;
+  font-weight: 300;
+  transition: color 0.5s ease-in-out;
+}
+
+.btn:hover span {
+  color: #ffffff;
+}
