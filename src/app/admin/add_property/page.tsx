@@ -2,7 +2,7 @@
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Page() {
     const [offer, setOffer] = useState("");
@@ -21,6 +21,25 @@ export default function Page() {
     const [zipCode, setZipCode] = useState("");
     const [files, setFiles] = useState<File[]>([]);
     const router = useRouter();
+
+    useEffect(() => {
+        const verifyToken = async () => {
+          try {
+            const response = await fetch('/api/verifyToken');
+    
+              if (!response.ok) {
+                  console.error('Token verification failed, redirecting to login');
+                  throw new Error('Failed to authenticate');
+              }
+
+          } catch (error) {
+            console.error('Error during token verification or data fetching:', error);
+            router.push('/admin/login');
+          }
+        };
+    
+        verifyToken();
+      }, [router]);
 
     async function handleSubmit() {
         const formData = new FormData();

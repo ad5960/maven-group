@@ -23,10 +23,6 @@ const LoginPage = () => {
       });
 
       if (response.ok) {
-        const { token } = await response.json();
-        console.log('Token received:', token);
-        
-
         // Redirect to dashboard
         router.push('/admin/dashboard');
       } else {

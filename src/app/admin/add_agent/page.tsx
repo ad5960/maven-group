@@ -1,7 +1,7 @@
 "use client"
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation"
 export default function Page() {
     const [name, setName] = useState("");
@@ -9,6 +9,25 @@ export default function Page() {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [licenseNumber, setLicenseNumber] = useState("");
     const router = useRouter();
+
+    useEffect(() => {
+        const verifyToken = async () => {
+          try {
+            const response = await fetch('/api/verifyToken');
+    
+              if (!response.ok) {
+                  console.error('Token verification failed, redirecting to login');
+                  throw new Error('Failed to authenticate');
+              }
+
+          } catch (error) {
+            console.error('Error during token verification or data fetching:', error);
+            router.push('/admin/login');
+          }
+        };
+    
+        verifyToken();
+      }, [router]);
 
     async function handleSubmit() {
         try {
