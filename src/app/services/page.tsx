@@ -24,7 +24,16 @@ export default function Page() {
           <p className="text-white text-center text-4xl sm:text-5xl">Services</p>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row items-center md:space-x-4 p-4">
+
+
+      
+
+
+
+
+
+
+      <div className="flex flex-col md:flex-row items-center md:space-x-4 mt-20">
         <div className="md:flex-1 w-full">
           <Image
             src={officeImg}
@@ -43,6 +52,10 @@ export default function Page() {
           </p>
         </div>
       </div>
+
+      
+
+
 
       <div className="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-4 p-4">
         <div className="md:flex-1 w-full">
@@ -63,6 +76,13 @@ export default function Page() {
           </p>
         </div>
       </div>
+
+      
+
+
+
+
+
 
       <div className="flex flex-col md:flex-row items-center md:space-x-4 p-4">
         <div className="md:flex-1 w-full">

@@ -1,3 +1,4 @@
+import { Roboto } from "next/font/google";
 import type { Config } from "tailwindcss";
 const flowbite = require("flowbite-react/tailwind");
 const config: Config = {
@@ -14,8 +15,17 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      colors: {
+        customBackground: '#F3ECDC',
+        customBackground2: '#54595F'
+      },
+      fontFamily: {
+        Roboto: ['"Roboto"', 'Sans-serif'],
+      },
     },
   },
-  plugins: [flowbite.plugin(),],
+  plugins: [flowbite.plugin(),
+    
+  ],
 };
 export default config;
