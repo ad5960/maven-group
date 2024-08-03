@@ -1,61 +1,45 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
-import { fetchAgents, fetchProperties } from './api/helper';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Agent from '@/app/models/agent';
 import Property from '@/app/models/property';
 import PropertyCard from '@/app/components/property_card';
 import AgentCard from '@/app/agents/[agentId]/page';
-import { useCookies } from 'next-client-cookies';
-import { jwtVerify } from 'jose';
-import Link from 'next/link';
-
+import { fetchAgents, fetchProperties } from './api/helper';
 
 export default function DashboardPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
-    const router = useRouter();
-    const cookies = useCookies();
- 
+  const router = useRouter();
 
-    useEffect(() => {
-        const token = cookies.get('authToken');
-        console.log('Cookie token:', token); // Debugging
-    
-        if (!token) {
-          console.log('Token not found or undefined:', token);
-          router.push('/admin/login');
-          return;
-        }
-        const secretKey = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const response = await fetch('/api/verifyToken');
 
-        if (!secretKey) {
-          throw new Error('JWT secret is not defined in environment variables');
-        }
+          if (!response.ok) {
+              console.error('Token verification failed, redirecting to login');
+              throw new Error('Failed to authenticate');
+          }
 
-        const verifyToken = async () => {
-            try {
-              const { payload } = await jwtVerify(token, secretKey, {
-                algorithms: ['HS256'], // Specify the expected algorithm
-              });
-      
-              // Load data only if token is valid
-              const loadData = async () => {
-                const agentsData = await fetchAgents();
-                const propertiesData = await fetchProperties();
-                setAgents(agentsData);
-                setProperties(propertiesData);
-              };
-              loadData();
-            } catch (error:any) {
-              console.error('Token verification failed:', error.message);
-              router.push('/admin/login');
-            }
-          };
-      
-          verifyToken();
-        }, []);
+        // Load data only if token is verified
+        const loadData = async () => {
+          const agentsData = await fetchAgents();
+          const propertiesData = await fetchProperties();
+          setAgents(agentsData);
+          setProperties(propertiesData);
+        };
+        loadData();
+      } catch (error) {
+        console.error('Error during token verification or data fetching:', error);
+        router.push('/admin/login');
+      }
+    };
+
+    verifyToken();
+  }, [router]);
 
   return (
     <div className="flex h-screen">
@@ -67,7 +51,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="space-y-4">
-          {agents.map(agent => (
+          {agents.map((agent) => (
             <AgentCard key={agent.id} params={{ agentId: agent.id }} />
           ))}
         </div>
@@ -81,7 +65,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          {properties.map(property => (
+          {properties.map((property) => (
             <PropertyCard
               key={property.id}
               name={property.frontage}
