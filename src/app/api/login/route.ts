@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     const response = NextResponse.json({ message: 'Login successful', token }, { status: 200 });
 
     response.cookies.set('authToken', token, {
-      httpOnly: false ,
+      httpOnly: false , // make it true during production
       // secure: process.env.NODE_ENV === 'production',
       maxAge: 3600,
       path: '/',

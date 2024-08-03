@@ -26,12 +26,17 @@ export function verifyToken(token: string): string | jwt.JwtPayload {
 }
 
 export async function getUserByEmail(email: string) {
-  const params = {
-    TableName: 'Admin',
-    Key: {
-      email,
-    },
-  };
-  const result = await dynamoDb.get(params).promise();
-  return result.Item;
+  try {
+    const params = {
+      TableName: 'Admin',
+      Key: {
+        email,
+      },
+    };
+    const result = await dynamoDb.get(params).promise();
+    return result.Item;
+  } catch (error) {
+    console.error(`Error retrieving user by email (${email}):`, error);
+    throw new Error('Error retrieving user data');
+  }
 }
