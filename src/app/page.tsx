@@ -58,12 +58,12 @@ export default function Page() {
           </p>
         </div>
       </div>
-      <div className=" flex justify-center items-center text-3xl mt-10">
+      <div className=" flex justify-center items-center text-3xl mt-10 font-semibold">
         <h1>Properties</h1>
       </div>
       <div className="flex justify-center items-center mt-10">
         
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
+                <div className=" py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
                     {properties.map(property => (
 
                         
@@ -78,8 +78,8 @@ export default function Page() {
                     ))}
         </div>
       </div>
-      <div className="flex justify-center mt-10 mb-20">
-      <div className="center">
+      <div className="flex justify-center mb-10">
+      <div className="cente">
           <Link href="/properties">
             <button className="btn">
     <svg width="180px" height="60px" viewBox="0 0 180 60" className="border button-svg">

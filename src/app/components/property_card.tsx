@@ -16,7 +16,7 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ name, imageUrl, link, offer, price }: PropertyCardProps) {
     return (
-        <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]'>
+        <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] mb-6'>
             <Link href={link}>
                 <div className="relative ">
                     <Image
