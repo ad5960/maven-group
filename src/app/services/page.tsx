@@ -6,6 +6,7 @@ import officeImg from "../assets/office.jpg";
 import shopsImg from "../assets/shops.jpg";
 import streetImg from "../assets/street.jpg";
 import Footer from "../components/footer";
+import Services from "../assets/services.jpg"
 
 export default function Page() {
 
@@ -14,11 +15,11 @@ export default function Page() {
       <Navbar />
       <div className="relative w-full h-[40vh]">
         <Image
-          src={SantaMonica}
+          src={Services}
           alt="Los Angeles Night"
           layout="fill"
           objectFit="cover"
-          className="opacity-90"
+          className=" brightness-50"
         />
         <div className="absolute inset-0 flex justify-center items-center">
           <p className="text-white text-center text-4xl sm:text-5xl">Services</p>
@@ -33,76 +34,80 @@ export default function Page() {
 
 
 
-      <div className="flex flex-col md:flex-row items-center md:space-x-4 mt-20">
-        <div className="md:flex-1 w-full">
-          <Image
-            src={officeImg}
-            width={600}
-            height={300}
-            alt="Office"
-            layout="responsive"
-          />
-        </div>
-        <div className="md:flex-1 mt-4 md:mt-0 w-full">
-          <h1 className="text-lg sm:text-xl font-bold">Heading Text</h1>
-          <p className="text-sm sm:text-md">
-            This is some paragraph text content that will wrap to the next line if it gets too long.
-            Add more content here to see how it wraps or expands. Lorem ipsum dolor sit amet,
-            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-      </div>
+      <div className="flex flex-col md:flex-row items-stretch md:space-x-0 mt-20">
+  <div className="md:flex-1 w-full">
+    <div className="relative w-full aspect-square xl:aspect-video">
+      <Image
+        src={officeImg}
+        alt="Office"
+        layout="fill"
+        objectFit="cover"
+        className="shadow-lg"
+      />
+    </div>
+  </div>
+  <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground flex flex-col justify-center">
+    <h1 className="text-lg sm:text-xl font-bold">Property Sales</h1>
+    <p className="text-sm sm:text-md mt-2 sm:mt-4">
+            With a keen understanding of the real estate market and an eye for detail,
+            we specialize in property sales that deliver exceptional results for my clients.
+            By leveraging comprehensive market analysis and strategic marketing techniques,
+            we ensure properties are positioned to attract the right buyers. Whether buying or selling,
+            we are committed to guiding clients through every step of the process,
+            maximizing their return on investment and ensuring a smooth transaction.
+    </p>
+  </div>
+</div>
 
-      
+<div className="flex flex-col md:flex-row items-stretch md:space-x-0">
+  <div className="md:flex-1 w-full">
+    <div className="relative w-full aspect-square xl:aspect-video">
+      <Image
+        src={streetImg}
+        alt="Street"
+        layout="fill"
+        objectFit="cover"
+        className="shadow-lg"
+      />
+    </div>
+  </div>
+  <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground3 flex flex-col justify-center">
+    <h1 className="text-lg sm:text-xl font-bold">Landlord Representation</h1>
+    <p className="text-sm sm:text-md mt-2 sm:mt-4">
+            As landlord representative, our goal is to protect and enhance the value of your investment.
+            We offer tailored solutions for effective property management, tenant acquisition,
+            and retention strategies. By focusing on maximizing occupancy rates and ensuring seamless
+            tenant interactions, we help landlords maintain a profitable and hassle-free property
+            ownership experience.
+    
+    </p>
+  </div>
+</div>
 
+<div className="flex flex-col md:flex-row items-stretch md:space-x-0">
+  <div className="md:flex-1 w-full">
+    <div className="relative w-full aspect-square xl:aspect-video">
+      <Image
+        src={shopsImg}
+        alt="Shops"
+        layout="fill"
+        objectFit="cover"
+        className="shadow-lg"
+      />
+    </div>
+  </div>
+  <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground4 flex flex-col justify-center">
+    <h1 className="text-lg sm:text-xl font-bold">Tenant Representation</h1>
+    <p className="text-sm sm:text-md mt-2 sm:mt-4">
+            Finding the right space can be a daunting task, but with our expertise in tenant representation,
+            the process becomes straightforward and stress-free. We work closely with tenants to understand
+            their unique needs and negotiate lease terms that align with their goals.
+            Our commitment to detail and market knowledge ensures that clients secure the ideal property
+            in the perfect location, meeting both their budgetary and functional requirements.
+    </p>
+  </div>
+</div>
 
-
-      <div className="flex flex-col md:flex-row-reverse items-center md:space-x-reverse md:space-x-4 p-4">
-        <div className="md:flex-1 w-full">
-          <Image
-            src={streetImg}
-            width={600}
-            height={300}
-            alt="Street"
-            layout="responsive"
-          />
-        </div>
-        <div className="md:flex-1 mt-4 md:mt-0 w-full">
-          <h1 className="text-lg sm:text-xl font-bold">Heading Text</h1>
-          <p className="text-sm sm:text-md">
-            This is some paragraph text content that will wrap to the next line if it gets too long.
-            Add more content here to see how it wraps or expands. Lorem ipsum dolor sit amet,
-            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-      </div>
-
-      
-
-
-
-
-
-
-      <div className="flex flex-col md:flex-row items-center md:space-x-4 p-4">
-        <div className="md:flex-1 w-full">
-          <Image
-            src={shopsImg}
-            width={600}
-            height={300}
-            alt="Shops"
-            layout="responsive"
-          />
-        </div>
-        <div className="md:flex-1 mt-4 md:mt-0 w-full">
-          <h1 className="text-lg sm:text-xl font-bold">Heading Text</h1>
-          <p className="text-sm sm:text-md">
-            This is some paragraph text content that will wrap to the next line if it gets too long.
-            Add more content here to see how it wraps or expands. Lorem ipsum dolor sit amet,
-            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-          </p>
-        </div>
-      </div>
       <Footer />
     </>
   )

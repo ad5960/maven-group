@@ -17,7 +17,9 @@ const config: Config = {
       },
       colors: {
         customBackground: '#F3ECDC',
-        customBackground2: '#54595F'
+        customBackground2: '#54595F',
+        customBackground3: '#E4E4E4',
+        customBackground4: '#EAD0BE'
       },
       fontFamily: {
         Roboto: ['"Roboto"', 'Sans-serif'],

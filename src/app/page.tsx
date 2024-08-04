@@ -83,7 +83,7 @@ export default function Page() {
 
 
 
-        <div className="mt-20">
+        <section className="mt-20">
   <div className="flex flex-col md:flex-row items-stretch md:space-x-0">
     <div className="md:flex-1 w-full">
       <div className="relative w-full  aspect-square xl:aspect-video">
@@ -99,7 +99,7 @@ export default function Page() {
     <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground flex flex-col justify-center">
       <h1 className="text-lg sm:text-xl font-bold">We are Mavens</h1>
       <p className="text-sm sm:text-md mt-2 sm:mt-4">
-        As an expert in property sales, landlord representation, and tenant
+        As experts in property sales, landlord representation, and tenant
         representation, we bring a wealth of experience and a deep
         understanding of the real estate market to the table. Our expertise
         in property sales ensures that clients receive top-notch guidance
@@ -114,7 +114,7 @@ export default function Page() {
       </a>
     </div>
   </div>
-</div>
+</section>
 
 
 
