@@ -17,6 +17,8 @@ export default function Page() {
     const [attachments, setAttachments] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
     const [files, setFiles] = useState<File[]>([]);
@@ -55,6 +57,8 @@ export default function Page() {
         formData.append("attachments", attachments);
         formData.append("street", street);
         formData.append("city", city);
+        formData.append("name", name);
+        formData.append("description", description);
         formData.append("state", state);
         formData.append("zipCode", zipCode);
         files.forEach((file, index) => {
@@ -86,6 +90,25 @@ export default function Page() {
                             label="Offer"
                             value={offer}
                             onChange={(e) => setOffer(e.target.value)}
+                        />
+                    </FormControl>
+                
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="name">Name</InputLabel>
+                        <OutlinedInput
+                            id="name"
+                            label="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="description">Description</InputLabel>
+                        <OutlinedInput
+                            id="description"
+                            label="Offer"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>

@@ -83,7 +83,9 @@ export default function DashboardPage() {
               {properties.map((property) => (
                 <PropertyCard
                   key={property.id}
-                  name={property.frontage}
+                  name={property.name}
+                  address = {property.address}
+                  description={property.description}
                   imageUrl=""
                   link={`/properties/${property.id}`}
                   offer={property.offer}

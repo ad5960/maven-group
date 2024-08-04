@@ -20,7 +20,7 @@ export default function Page() {
       try {
         const res = await axios.get("/api/properties/", {
           params: {
-            limit: 5
+            limit: 6
           }
         });
         console.log("Response data:", res.data);
@@ -137,6 +137,8 @@ export default function Page() {
               <PropertyCard
                 key={property.id}
                 name={property.frontage}
+                description={property.description}
+                address = {property.address}
                 imageUrl={
                   property.imageUrls && property.imageUrls.length > 0
                     ? property.imageUrls[0]

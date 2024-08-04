@@ -40,11 +40,6 @@ async function uploadFilesToS3(files: File[], folderName: string) {
     return fileUrls;
 }
 
-// export const config = {
-//     api: {
-//         bodyParser: false, // Disable Next.js body parsing
-//     },
-// };
 
 // POST function for adding new property
 export async function POST(req: Request) {
@@ -54,6 +49,8 @@ export async function POST(req: Request) {
         const files = fileList.filter((item): item is File => item instanceof File);
 
         const offer = formData.get("offer")?.toString();
+        const name = formData.get("name")?.toString();
+        const description = formData.get("description")?.toString();
         const askingPrice = formData.get("askingPrice")?.toString();
         const pricePerSF = formData.get("pricePerSF")?.toString();
         const propertyType = formData.get("propertyType")?.toString();
@@ -81,6 +78,8 @@ export async function POST(req: Request) {
             Item: {
                 id,
                 offer,
+                name,
+                description,
                 askingPrice,
                 pricePerSF,
                 propertyType,
@@ -146,8 +145,6 @@ export async function GET(req: Request) {
                         if (imageKeys.length === 0) {
                             console.warn("No images found in folder:", imageFolder);
                         } else {
-        
-
         
                             property.imageUrls = ["https://d2hfeqecnq2ysj.cloudfront.net/"+ imageKeys[0]]; // Assign only the first image URL
                         }

@@ -94,13 +94,15 @@ export default function Page() {
                 </div>
             </div>
             <div className="flex justify-center items-center my-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-11/12 md:w-2/3">
+                <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
                     {properties.map(property => (
 
                         
                         <PropertyCard
                             key={property.id}
-                            name={property.frontage}
+                            name={property.name}
+                            description={property.description}
+                            address = {property.address}
                             imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
                             link={`/properties/${property.id}`}
                             offer={property.offer}

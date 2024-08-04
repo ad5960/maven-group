@@ -55,6 +55,7 @@ export default function SingleProperty({
     { key: "Land Size", value: property.landSize },
     { key: "Year Built", value: property.yearBuilt },
     { key: "PARKING", value: property.parking },
+
   ];
 
  
@@ -100,7 +101,7 @@ export default function SingleProperty({
         <div className="info-section">
           <h1 className="text-4xl pt-5 font-bold">Description</h1>
           <p className="pt-5 font-light mb-10">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae a iste similique dolor optio veniam laudantium unde adipisci doloribus illo?
+            {property.description}
           </p>
           <h1 className="text-4xl font-bold pb-5">Details</h1>
           <ul>

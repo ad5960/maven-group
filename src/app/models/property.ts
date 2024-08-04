@@ -22,6 +22,8 @@ export default interface Property {
     downloads: {                 // Links to download files
         attachments: string[]; // Link to the marketing brochure
     };
+    name: string;
+    description: string;
     address: {
         street: string;          // Street address
         city: string;            // City

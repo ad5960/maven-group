@@ -6,15 +6,24 @@ import { OfferType } from "../models/property";
 import { MdLocationOn } from 'react-icons/md';
 import beach from "../assets/beach.jpg";
 
+interface Address {
+    city: string;
+    state: string;
+    zipCode: string;
+    street: string; // Add other address-related fields as needed
+}
+
 interface PropertyCardProps {
     name: string,
     imageUrl: string,
     link: string,
     offer: OfferType,
     price: number | string,
+    description: string,
+    address: Address
 }
 
-export default function PropertyCard({ name, imageUrl, link, offer, price }: PropertyCardProps) {
+export default function PropertyCard({ name, imageUrl, link, offer, price, description, address }: PropertyCardProps) {
     return (
         <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] mb-6'>
             <Link href={link}>
@@ -37,11 +46,11 @@ export default function PropertyCard({ name, imageUrl, link, offer, price }: Pro
                     <div className='flex items-center gap-1'>
                         <MdLocationOn className='h-4 w-4 text-green-700' />
                         <p className='text-sm text-gray-600 truncate w-full'>
-                            {name}
+                            {address.street + ", " + address.city + ", " + address.state + ", " + address.zipCode}
                         </p>
                     </div>
                     <p className='text-sm text-gray-600 line-clamp-2'>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        { description }
                     </p>
                     <p className='text-slate-500 mt-2 font-semibold'>
                         {price}
