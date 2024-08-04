@@ -70,7 +70,6 @@ export function CardComponent() {
            Christoper Mavian
           </h5>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            +617 892 9912
           </span>
           <div className="mt-4 flex space-x-3 lg:mt-6">
             <Button

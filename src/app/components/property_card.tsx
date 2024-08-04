@@ -57,6 +57,7 @@ export default function PropertyCard({ name, imageUrl, link, offer, price, descr
                     </p>
                 </div>
             </Link>
+            
         </div>
     );
 }

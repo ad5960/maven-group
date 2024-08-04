@@ -136,7 +136,7 @@ export default function Page() {
             {properties.map((property) => (
               <PropertyCard
                 key={property.id}
-                name={property.frontage}
+                name={property.name}
                 description={property.description}
                 address = {property.address}
                 imageUrl={

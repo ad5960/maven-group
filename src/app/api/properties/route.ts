@@ -8,8 +8,8 @@ import AWS from "aws-sdk";
 const s3Client = new S3Client({
     region: process.env.AWS_REGION as string,
     credentials: {
-        accessKeyId: process.env.AWS_S3_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_S3_ACCESS_SECRET as string,
+        accessKeyId: process.env.AWS_ACCESS_KEY as string,
+        secretAccessKey: process.env.AWS_ACCESS_SECRET as string,
     },
 });
 
@@ -34,7 +34,7 @@ async function uploadFilesToS3(files: File[], folderName: string) {
             };
             const command = new PutObjectCommand(params);
             await s3Client.send(command);
-            return `https://mavenimages.s3.amazonaws.com/${filename}`;
+            return `https://mavenpropertyimages.s3.amazonaws.com/${filename}`;
         })
     );
     return fileUrls;
@@ -90,7 +90,7 @@ export async function POST(req: Request) {
                 parking,
                 downloads: { attachments },
                 address: { street, city, state, zipCode },
-                imageUrl: `https://mavenimages.s3.amazonaws.com/${folderName}/`,
+                imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
             },
         };
 
@@ -146,7 +146,7 @@ export async function GET(req: Request) {
                             console.warn("No images found in folder:", imageFolder);
                         } else {
         
-                            property.imageUrls = ["https://d2hfeqecnq2ysj.cloudfront.net/"+ imageKeys[0]]; // Assign only the first image URL
+                            property.imageUrls = ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]]; // Assign only the first image URL
                         }
                     }
                 }
@@ -160,11 +160,15 @@ export async function GET(req: Request) {
 
     async function listObjectsInFolder(folder: string): Promise<string[]> {
         const params = {
-            Bucket: BUCKET_NAME,
-            Prefix: folder,
+          Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+          Prefix: folder,
         };
-    
+      
         const response = await s3.listObjectsV2(params).promise();
-        return response.Contents ? response.Contents.map(item => item.Key!) : [];
-    }
+      
+        // Filter out directory-like entries
+        return response.Contents
+          ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith('/'))
+          : [];
+      }
 }

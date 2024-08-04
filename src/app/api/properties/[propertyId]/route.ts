@@ -37,6 +37,7 @@ export async function GET(
     const imageFolder = new URL(fullImageUrl).pathname.substring(1);
 
     const imageKeys = await listObjectsInFolder(imageFolder);
+    
 
     if (imageKeys.length === 0) {
       console.warn("No images found in folder:", imageFolder);
@@ -45,7 +46,7 @@ export async function GET(
 
       const imageUrls = imageKeys.map((key) => {
 
-      return encodeURI("https://d2hfeqecnq2ysj.cloudfront.net/"+key)
+      return encodeURI("https://d2cw6pmn7dqyjd.cloudfront.net/"+key)
     });
 
     property.imageUrls = imageUrls;
@@ -65,5 +66,9 @@ async function listObjectsInFolder(folder: string): Promise<string[]> {
   };
 
   const response = await s3.listObjectsV2(params).promise();
-  return response.Contents ? response.Contents.map((item) => item.Key!) : [];
+
+  // Filter out directory-like entries
+  return response.Contents
+    ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith('/'))
+    : [];
 }
