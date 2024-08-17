@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
@@ -6,14 +7,16 @@ export async function GET(req: NextRequest) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get('authToken')?.value;
+    console.log(token)
 
     if (!token) {
+
       console.error('Token not found');
       return NextResponse.json({ error: 'Token not found' }, { status: 401 });
     }
 
     const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
-
+    
     // Verify the token
     const { payload } = await jwtVerify(token, secretKey, {
       algorithms: ['HS256'],

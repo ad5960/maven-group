@@ -1,6 +1,5 @@
-// src/app/api/login/route.ts
 
-import { NextApiRequest, NextApiResponse } from 'next';
+
 import { getUserByEmail, verifyPassword, generateToken } from '@/app/lib/auth';
 import { NextResponse } from 'next/server';
 
@@ -17,7 +16,9 @@ export async function POST(req: Request) {
     const isPasswordValid = await verifyPassword(password, user.hashedPassword);
 
     if (!isPasswordValid) {
-      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
+      console.log("wrong password")
+      return NextResponse.json({ message: 'Invalid email or passwordsbdhsdhgsd' }, { status: 401 });
+      
     }
 
     const token = generateToken(email);
@@ -26,8 +27,8 @@ export async function POST(req: Request) {
     const response = NextResponse.json({ message: 'Login successful', token }, { status: 200 });
 
     response.cookies.set('authToken', token, {
-      httpOnly: false , // make it true during production
-      // secure: process.env.NODE_ENV === 'production',
+      httpOnly: true , // make it true during production
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 3600,
       path: '/',
     });

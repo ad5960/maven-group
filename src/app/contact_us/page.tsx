@@ -30,8 +30,6 @@ export default function Page() {
             
         </div>
 
-        <p className="my-4">1515 Sepulveda Boulevard<br />
-            Los Angeles, CA 90025</p>
 
         <p className="text-2xl md:text-3xl font-bold">Executive Team</p>
         <p className="text-lg md:text-xl font-semibold mt-4">Chris Mavian</p>
