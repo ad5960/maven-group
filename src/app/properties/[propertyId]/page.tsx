@@ -30,7 +30,6 @@ export default function SingleProperty({
         try {
           const res = await axios.get(`/api/properties/${id}`);
           setProperty(res.data);
-          console.log("Fetched property:hahaha", res.data);
         } catch (error) {
           console.error("Error fetching property:", error);
         }
@@ -113,6 +112,19 @@ export default function SingleProperty({
             ))}
           </ul>
           <h1 className="text-4xl font-bold pb-5 mt-10">Download</h1>
+          <ul>
+            {property.pdfUrls && property.pdfUrls.length > 0 ? (
+              property.pdfUrls.map((pdfUrl, index) => (
+                <li key={index}>
+                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                    {`Property Information Sheet ${index + 1}`}
+                  </a>
+                </li>
+              ))
+            ) : (
+              <p>No Property Informaiton Sheet available for download.</p>
+            )}
+          </ul>
         </div>
         <div className="side-content w-full md:w-2/5 mt-10 md:mt-0 px-4 md:px-0 md:mx-8">
           <h1 className="text-3xl font-semibold pb-5 mt-10 text-center">Contact An Agent</h1>

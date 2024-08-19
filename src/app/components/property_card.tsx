@@ -4,7 +4,7 @@ import { Tag } from "./tag";
 import Link from "next/link";
 import { OfferType } from "../models/property";
 import { MdLocationOn } from 'react-icons/md';
-import beach from "../assets/beach.jpg";
+
 
 interface Address {
     city: string;
@@ -23,13 +23,14 @@ interface PropertyCardProps {
     address: Address
 }
 
+const defaultImg = "https://d2m41b1lxy01wm.cloudfront.net/LANight.jpg"
 export default function PropertyCard({ name, imageUrl, link, offer, price, description, address }: PropertyCardProps) {
     return (
         <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] mb-6'>
             <Link href={link}>
                 <div className="relative ">
                     <Image
-                        src={imageUrl ? imageUrl : beach}
+                        src={imageUrl ? imageUrl : defaultImg}
                         alt="Thumbnail"
                         className='h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300'
                         width={330}

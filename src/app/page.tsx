@@ -2,8 +2,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./components/nav";
-import Expert from "./assets/expert.jpg"
-import Beach from "./assets/beach.jpg"
 import Footer from "./components/footer";
 import { useEffect, useState } from "react";
 import Property from "./models/property";
@@ -48,13 +46,14 @@ export default function Page() {
       <div className="relative">
         <Navbar />
         <div className="w-full h-screen relative">
-          <Image
-            src={Beach}
-            alt="Los Angeles Night"
-            layout="fill"
-            objectFit="cover"
-            className="filter brightness-75"
-          />
+        <Image
+  src="https://d2m41b1lxy01wm.cloudfront.net/beach.jpg"
+  alt="Los Angeles Night"
+  layout="fill"
+  objectFit="cover"
+  className="filter brightness-75"
+/>
+
           <div className="absolute inset-0 flex flex-col justify-center items-center">
             <p className="text-white text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold">
               <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
@@ -88,7 +87,7 @@ export default function Page() {
     <div className="md:flex-1 w-full">
       <div className="relative w-full  aspect-square xl:aspect-video">
         <Image
-          src={Expert}
+          src="https://d2m41b1lxy01wm.cloudfront.net/expert.jpg"
           alt="Office"
           layout="fill"
           objectFit="cover"

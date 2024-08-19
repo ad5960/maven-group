@@ -7,6 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const cookieStore = cookies();
     const token = cookieStore.get('authToken')?.value;
+    console.log(cookieStore.getAll())
     console.log(token)
 
     if (!token) {

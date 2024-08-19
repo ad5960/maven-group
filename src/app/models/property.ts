@@ -8,27 +8,26 @@ export enum OfferType {
 
 export default interface Property {
     id: string;
-    offer: OfferType;            // Offer type
-    askingPrice: number;         // Asking Price
+    offer: OfferType;
+    askingPrice: number;
     pricePerSF: number;
-    propertyType: string;        // Property type
-    buildingSize: string;        // Building size in square feet
-    landSize: string;            // Land size in square feet
+    propertyType: string;
+    buildingSize: string;
+    landSize: string;
     imageUrl: string;
     imageUrls: string[];
-    yearBuilt: number;           // Year the property was built
-    frontage: string;            // Frontage along a street
-    parking: string;             // Parking details
-    downloads: {                 // Links to download files
-        attachments: string[]; // Link to the marketing brochure
-    };
+    pdfUrls: string[];             // New field for storing PDF URLs
+    yearBuilt: number;
+    frontage: string;
+    parking: string;
     name: string;
     description: string;
     address: {
-        street: string;          // Street address
-        city: string;            // City
-        state: string;           // State
-        zipCode: string;         // Zip code
+        street: string;
+        city: string;
+        state: string;
+        zipCode: string;
     };
 }
+
 

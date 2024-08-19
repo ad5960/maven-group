@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import AWS from "aws-sdk";
 
+
 const s3Client = new S3Client({
     region: process.env.AWS_REGION as string,
     credentials: {
@@ -40,6 +41,34 @@ async function uploadFilesToS3(files: File[], folderName: string) {
     return fileUrls;
 }
 
+const BUCKET_NAME_ATTACHMENTS = "mavenattachments";
+
+// Function for uploading PDFs to the S3 bucket
+async function uploadPdfsToS3(files: File[], folderName: string) {
+    const fileUrls = await Promise.all(
+        files.map(async (file) => {
+            try {
+                const buffer = Buffer.from(await file.arrayBuffer());
+                const filename = `${folderName}/${file.name}`;
+                const params = {
+                    Bucket: BUCKET_NAME_ATTACHMENTS,
+                    Key: filename,
+                    Body: buffer,
+                    ContentType: 'application/pdf', // Ensure this is correct
+                };
+                const command = new PutObjectCommand(params);
+                const response = await s3Client.send(command);
+                console.log(`Uploaded PDF: ${filename} - Response:`, response);
+                return `https://mavenattachments.s3.amazonaws.com/${filename}`;
+            } catch (error) {
+                console.error(`Failed to upload PDF: ${file.name}`, error);
+                throw error;
+            }
+        })
+    );
+    return fileUrls;
+}
+
 
 // POST function for adding new property
 export async function POST(req: Request) {
@@ -47,6 +76,9 @@ export async function POST(req: Request) {
         const formData = await req.formData();
         const fileList = formData.getAll("files");
         const files = fileList.filter((item): item is File => item instanceof File);
+
+        const pdfFileList = formData.getAll("pdfs");
+        const pdfFiles = pdfFileList.filter((item): item is File => item instanceof File);
 
         const offer = formData.get("offer")?.toString();
         const name = formData.get("name")?.toString();
@@ -59,7 +91,6 @@ export async function POST(req: Request) {
         const yearBuilt = formData.get("yearBuilt")?.toString();
         const frontage = formData.get("frontage")?.toString();
         const parking = formData.get("parking")?.toString();
-        const attachments = formData.get("attachments")?.toString()?.split(",");
         const street = formData.get("street")?.toString();
         const city = formData.get("city")?.toString();
         const state = formData.get("state")?.toString();
@@ -71,6 +102,8 @@ export async function POST(req: Request) {
 
         const folderName = `${street}_${city}_${state}_${zipCode}`.replace(/ /g, "_");
         const fileUrls = await uploadFilesToS3(files, folderName);
+
+        const pdfUrls = await uploadPdfsToS3(pdfFiles, folderName);
 
         const id = uuidv4();
         const params = {
@@ -88,9 +121,9 @@ export async function POST(req: Request) {
                 yearBuilt,
                 frontage,
                 parking,
-                downloads: { attachments },
                 address: { street, city, state, zipCode },
                 imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
+                pdfUrls,
             },
         };
 

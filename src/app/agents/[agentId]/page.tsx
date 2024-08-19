@@ -24,13 +24,16 @@ export default function AgentCard({params}: {params: {agentId: string}}) {
     if (!agent) {
         return <div>Loading...</div>;
     }
-    
-    console.log(agent)
-
     return (<>
         <div className="flex flex-row w-full h-[100px]">
             <div className="flex flex-basis-1/4 w-1/4 mx-2 my-2">
-                <Image src={LANight} alt="Agent Photo" className="w-full h-full object-cover" />
+                <Image
+                    width={300}
+                    height={300}
+                    src="https://d2m41b1lxy01wm.cloudfront.net/SantaMonica.jpg"
+                    alt="Agent Photo"
+                    className="w-full h-full object-cover"
+                />
             </div>
             <div className="flex flex-1 flex-col mx-2 my-2">
                 { agent ? (<>

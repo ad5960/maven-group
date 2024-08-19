@@ -1,12 +1,9 @@
 "use client";
 import Image from "next/image";
 import Navbar from "../components/nav";
-import SantaMonica from "../assets/SantaMonica.jpg";
-import officeImg from "../assets/office.jpg";
-import shopsImg from "../assets/shops.jpg";
-import streetImg from "../assets/street.jpg";
+
 import Footer from "../components/footer";
-import Services from "../assets/services.jpg"
+
 
 export default function Page() {
 
@@ -15,7 +12,7 @@ export default function Page() {
       <Navbar />
       <div className="relative w-full h-[40vh]">
         <Image
-          src={Services}
+          src="https://d2m41b1lxy01wm.cloudfront.net/services.jpg"
           alt="Los Angeles Night"
           layout="fill"
           objectFit="cover"
@@ -38,7 +35,7 @@ export default function Page() {
   <div className="md:flex-1 w-full">
     <div className="relative w-full aspect-square xl:aspect-video">
       <Image
-        src={officeImg}
+        src="https://d2m41b1lxy01wm.cloudfront.net/office.jpg"
         alt="Office"
         layout="fill"
         objectFit="cover"
@@ -63,7 +60,7 @@ export default function Page() {
   <div className="md:flex-1 w-full">
     <div className="relative w-full aspect-square xl:aspect-video">
       <Image
-        src={streetImg}
+        src="https://d2m41b1lxy01wm.cloudfront.net/street.jpg"
         alt="Street"
         layout="fill"
         objectFit="cover"
@@ -88,7 +85,7 @@ export default function Page() {
   <div className="md:flex-1 w-full">
     <div className="relative w-full aspect-square xl:aspect-video">
       <Image
-        src={shopsImg}
+        src="https://d2m41b1lxy01wm.cloudfront.net/shops.jpg"
         alt="Shops"
         layout="fill"
         objectFit="cover"

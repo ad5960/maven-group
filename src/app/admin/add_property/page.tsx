@@ -14,34 +14,34 @@ export default function Page() {
     const [yearBuilt, setYearBuilt] = useState("");
     const [frontage, setFrontage] = useState("");
     const [parking, setParking] = useState("");
-    const [attachments, setAttachments] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
-    const [files, setFiles] = useState<File[]>([]);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [pdfFiles, setPdfFiles] = useState<File[]>([]);
     const router = useRouter();
 
-    useEffect(() => {
-        const verifyToken = async () => {
-          try {
-            const response = await fetch('/api/verifyToken');
+    // useEffect(() => {
+    //     const verifyToken = async () => {
+    //       try {
+    //         const response = await fetch('/api/verifyToken');
     
-              if (!response.ok) {
-                  console.error('Token verification failed, redirecting to login');
-                  throw new Error('Failed to authenticate');
-              }
+    //           if (!response.ok) {
+    //               console.error('Token verification failed, redirecting to login');
+    //               throw new Error('Failed to authenticate');
+    //           }
 
-          } catch (error) {
-            console.error('Error during token verification or data fetching:', error);
-            router.push('/admin/login');
-          }
-        };
+    //       } catch (error) {
+    //         console.error('Error during token verification or data fetching:', error);
+    //         router.push('/admin/login');
+    //       }
+    //     };
     
-        verifyToken();
-      }, [router]);
+    //     verifyToken();
+    //   }, [router]);
 
     async function handleSubmit() {
         const formData = new FormData();
@@ -54,16 +54,17 @@ export default function Page() {
         formData.append("yearBuilt", yearBuilt);
         formData.append("frontage", frontage);
         formData.append("parking", parking);
-        formData.append("attachments", attachments);
         formData.append("street", street);
         formData.append("city", city);
         formData.append("name", name);
         formData.append("description", description);
         formData.append("state", state);
         formData.append("zipCode", zipCode);
-        files.forEach((file, index) => {
-            formData.append(`files`, file);
-        });
+        imageFiles.forEach((file, index) => formData.append(`files`, file));
+        pdfFiles.forEach((file, index) => formData.append(`pdfs`, file));
+
+        console.log("Form Data:", formData);
+
 
         try {
             const res = await axios.post("/api/properties/", formData, {
@@ -139,6 +140,36 @@ export default function Page() {
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="files-input">Upload Images</InputLabel>
+                        <OutlinedInput
+                            id="files-input"
+                            type="file"
+                            inputProps={{ accept: "image/*", multiple: true }}
+                            onChange={(e) => {
+                                const target = e.target as HTMLInputElement;
+                                if (target.files) {
+                                    setImageFiles(Array.from(target.files));
+                                }
+                            }}
+                        />
+                    </FormControl>
+
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="pdfs-input">Upload PDFs</InputLabel>
+                        <OutlinedInput
+                            id="pdfs-input"
+                            type="file"
+                            inputProps={{ accept: "application/pdf", multiple: true }}
+                            onChange={(e) => {
+                                const target = e.target as HTMLInputElement;
+                                if (target.files) {
+                                    setPdfFiles(Array.from(target.files));
+                                }
+                            }}
+                        />
+                    </FormControl>
+
+                    <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="buildingSize-input">Building Size</InputLabel>
                         <OutlinedInput
                             id="buildingSize-input"
@@ -183,15 +214,8 @@ export default function Page() {
                             onChange={(e) => setParking(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="attachments-input">Attachments (comma separated)</InputLabel>
-                        <OutlinedInput
-                            id="attachments-input"
-                            label="Attachments"
-                            value={attachments}
-                            onChange={(e) => setAttachments(e.target.value)}
-                        />
-                    </FormControl>
+
+
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="street-input">Street</InputLabel>
                         <OutlinedInput
@@ -228,20 +252,6 @@ export default function Page() {
                             onChange={(e) => setZipCode(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl variant="outlined" fullWidth>
-    <InputLabel htmlFor="files-input">Upload Images</InputLabel>
-    <OutlinedInput
-        id="files-input"
-        type="file"
-        inputProps={{ accept: "image/*", multiple: true }}
-        onChange={(e) => {
-            const target = e.target as HTMLInputElement;
-            if (target.files) {
-                setFiles(Array.from(target.files));
-            }
-        }}
-    />
-</FormControl>
                     <Button
                         type="submit"
                         variant="contained"

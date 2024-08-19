@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+
 import Navbar from "../components/nav";
-import SantaMonica from "../assets/SantaMonica.jpg"
+
 import Footer from "../components/footer";
 export default function Page() {
     return (
@@ -9,7 +9,7 @@ export default function Page() {
             <Navbar />
             <div className="relative w-full h-[40vh] sm:h-[50vh]"> {/* Set the height to 40% of viewport height, increase for smaller screens */}
                 <Image
-                    src={SantaMonica}
+                    src="https://d2m41b1lxy01wm.cloudfront.net/SantaMonica.jpg"
                     alt="Los Angeles Night"
                     layout="fill"
                     objectFit="cover"

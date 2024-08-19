@@ -1,9 +1,7 @@
 import Image from "next/image";
 import Navbar from "../components/nav";
-import SantaMonica from "../assets/SantaMonica.jpg";
 import ContactForm from "../components/contact_form";
 import Footer from "../components/footer";
-import { CardComponent } from "../components/card";
 
 export default function Page() {
     return (
@@ -11,7 +9,7 @@ export default function Page() {
             <Navbar />
             <div className="relative w-full h-[40vh]">
                 <Image
-                    src={SantaMonica}
+                    src="https://d2m41b1lxy01wm.cloudfront.net/SantaMonica.jpg"
                     alt="Los Angeles Night"
                     layout="fill"
                     objectFit="cover"
@@ -26,16 +24,16 @@ export default function Page() {
     <div className="flex flex-col mx-4 lg:mx-10 mb-10 lg:mb-0 w-full lg:w-1/2">
         <p className="text-2xl md:text-3xl font-bold">General Inquiries</p>
         <div >
-            <p className="flex flex-1 font-bold">Email: chris@mavengroups.com</p>
-            
+            <p className=" mt-5 mb-5 flex flex-1 font-bold">Email: chris@mavengroups.com</p>
+            <p className="mt-5 mb-5">9350 Wilshire Blvd, Suite 203. Beverly Hills, CA 90212</p>
         </div>
 
 
-        <p className="text-2xl md:text-3xl font-bold">Executive Team</p>
-        <p className="text-lg md:text-xl font-semibold mt-4">Chris Mavian</p>
+        <p className="text-2xl md:text-3xl font-bold ">Executive Team</p>
+        <p className="text-lg md:text-xl font-semibold mt-5 mb-5">Christopher Mavian</p>
         <p className="flex">chris@mavengroups.com</p>
     </div>
-    <div className="flex w-full lg:w-1/2 lg:mx-10">
+    <div className="w-full lg:w-1/2 lg:mx-10">
         <ContactForm />
     </div>
 </div>

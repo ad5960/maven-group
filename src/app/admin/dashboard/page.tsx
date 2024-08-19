@@ -16,39 +16,42 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const verifyToken = async () => {
+    // const verifyToken = async () => {
+    //   try {
+    //     const response = await fetch('/api/verifyToken');
+
+    //     if (!response.ok) {
+    //       console.error('Token verification failed, redirecting to login');
+    //       throw new Error('Failed to authenticate');
+    //     }
+
+    //     // Load data only if token is verified
+        
+    //   } catch (error) {
+    //     console.error('Error during token verification or data fetching:', error);
+    //     router.push('/admin/login');
+    //   }
+    // };
+
+
+    const loadData = async () => {
       try {
-        const response = await fetch('/api/verifyToken');
-
-        if (!response.ok) {
-          console.error('Token verification failed, redirecting to login');
-          throw new Error('Failed to authenticate');
-        }
-
-        // Load data only if token is verified
-        const loadData = async () => {
-          try {
-            const [agentsData, propertiesData] = await Promise.all([
-              fetchAgents(),
-              fetchProperties(),
-            ]);
-            setAgents(agentsData);
-            setProperties(propertiesData);
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          } finally {
-            setLoading(false); // Stop loading after data is fetched
-          }
-        };
-        loadData();
+        const [agentsData, propertiesData] = await Promise.all([
+          fetchAgents(),
+          fetchProperties(),
+        ]);
+        setAgents(agentsData);
+        setProperties(propertiesData);
       } catch (error) {
-        console.error('Error during token verification or data fetching:', error);
-        router.push('/admin/login');
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false); // Stop loading after data is fetched
       }
     };
-
-    verifyToken();
-  }, [router]);
+    loadData();
+  }, [])
+    // verifyToken();
+  // }, [router]);
 
   return (
     <div className="flex h-screen">
