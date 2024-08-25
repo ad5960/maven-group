@@ -116,7 +116,7 @@ export default function SingleProperty({
             {property.pdfUrls && property.pdfUrls.length > 0 ? (
               property.pdfUrls.map((pdfUrl, index) => (
                 <li key={index}>
-                  <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                  <a className=" text-blue-700" href={pdfUrl} target="_blank" rel="noopener noreferrer">
                     {`Property Information Sheet ${index + 1}`}
                   </a>
                 </li>

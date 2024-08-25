@@ -71,11 +71,11 @@ export default function Page() {
   <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground3 flex flex-col justify-center">
     <h1 className="text-lg sm:text-xl font-bold">Landlord Representation</h1>
     <p className="text-sm sm:text-md mt-2 sm:mt-4">
-            As landlord representative, our goal is to protect and enhance the value of your investment.
-            We offer tailored solutions for effective property management, tenant acquisition,
-            and retention strategies. By focusing on maximizing occupancy rates and ensuring seamless
-            tenant interactions, we help landlords maintain a profitable and hassle-free property
-            ownership experience.
+            We offer comprehensive services tailored to maximize your property&apos;s potential. Whether you&apos;re
+            looking to sell or lease, we provide expert guidance, market analysis, and a strategic approach
+            to ensure your property attracts the right buyers or tenants. From marketing and negotiations to
+            finalizing deals, we handle every step with professionalism and attention to detail, ensuring a
+            smooth and successful transaction for landlords.
     
     </p>
   </div>
