@@ -83,6 +83,7 @@ export async function POST(req: Request) {
         const offer = formData.get("offer")?.toString();
         const name = formData.get("name")?.toString();
         const description = formData.get("description")?.toString();
+        const leaseAmount = formData.get("leaseAmount")?.toString();
         const askingPrice = formData.get("askingPrice")?.toString();
         const pricePerSF = formData.get("pricePerSF")?.toString();
         const propertyType = formData.get("propertyType")?.toString();
@@ -121,6 +122,7 @@ export async function POST(req: Request) {
                 yearBuilt,
                 frontage,
                 parking,
+                leaseAmount,
                 address: { street, city, state, zipCode },
                 imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
                 pdfUrls,

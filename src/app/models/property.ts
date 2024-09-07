@@ -16,9 +16,10 @@ export default interface Property {
     landSize: string;
     imageUrl: string;
     imageUrls: string[];
-    pdfUrls: string[];             // New field for storing PDF URLs
+    pdfUrls: string[];             
     yearBuilt: number;
     frontage: string;
+    leaseAmount: string;
     parking: string;
     name: string;
     description: string;

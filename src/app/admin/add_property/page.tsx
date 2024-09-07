@@ -2,7 +2,7 @@
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Page() {
     const [offer, setOffer] = useState("");
@@ -20,6 +20,7 @@ export default function Page() {
     const [description, setDescription] = useState("");
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
+    const [leaseAmount, setLeaseAmount] = useState("")
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [pdfFiles, setPdfFiles] = useState<File[]>([]);
     const router = useRouter();
@@ -60,6 +61,7 @@ export default function Page() {
         formData.append("description", description);
         formData.append("state", state);
         formData.append("zipCode", zipCode);
+        formData.append("leaseAmount", leaseAmount)
         imageFiles.forEach((file, index) => formData.append(`files`, file));
         pdfFiles.forEach((file, index) => formData.append(`pdfs`, file));
 
@@ -119,6 +121,15 @@ export default function Page() {
                             label="Asking Price"
                             value={askingPrice}
                             onChange={(e) => setAskingPrice(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="leaseAmount-input">Lease Amount</InputLabel>
+                        <OutlinedInput
+                            id="leaseAmount-input"
+                            label="Lease Amount"
+                            value={leaseAmount}
+                            onChange={(e) => setLeaseAmount(e.target.value)}
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>

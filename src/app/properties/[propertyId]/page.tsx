@@ -47,17 +47,19 @@ export default function SingleProperty({
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
 
   const data = [
-    { key: "Price", value: property.askingPrice },
     { key: "Offer", value: property.offer },
+    { key: "Price", value: property.askingPrice },
+    ...(property.offer === 'For Lease' || property.offer === 'For Sale or Lease'
+      ? [{ key: "Lease Amount", value: property.leaseAmount }]
+      : []),
     { key: "Property Type", value: property.propertyType },
     { key: "Building Size", value: property.buildingSize },
     { key: "Land Size", value: property.landSize },
     { key: "Year Built", value: property.yearBuilt },
     { key: "PARKING", value: property.parking },
+    
+];
 
-  ];
-
- 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
