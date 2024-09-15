@@ -43,9 +43,9 @@ export default function SingleProperty({
     return <div>Loading...</div>;
   }
 
-
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
 
+  // Combine static fields and custom fields
   const data = [
     { key: "Offer", value: property.offer },
     { key: "Price", value: property.askingPrice },
@@ -56,10 +56,13 @@ export default function SingleProperty({
     { key: "Building Size", value: property.buildingSize },
     { key: "Land Size", value: property.landSize },
     { key: "Year Built", value: property.yearBuilt },
-    { key: "PARKING", value: property.parking },
-    
-];
-
+    { key: "Parking", value: property.parking },
+    // Add custom fields from property.customFields if they exist
+    ...(property.customFields ? property.customFields.map((field) => ({
+      key: field.key,
+      value: field.value,
+    })) : [])
+  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -68,6 +71,7 @@ export default function SingleProperty({
       [name]: value
     });
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -124,7 +128,7 @@ export default function SingleProperty({
                 </li>
               ))
             ) : (
-              <p>No Property Informaiton Sheet available for download.</p>
+              <p>No Property Information Sheet available for download.</p>
             )}
           </ul>
         </div>

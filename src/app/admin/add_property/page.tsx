@@ -23,6 +23,7 @@ export default function Page() {
     const [leaseAmount, setLeaseAmount] = useState("")
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [pdfFiles, setPdfFiles] = useState<File[]>([]);
+    const [customFields, setCustomFields] = useState<{ key: string; value: string }[]>([]);
     const router = useRouter();
 
     // useEffect(() => {
@@ -44,6 +45,18 @@ export default function Page() {
     //     verifyToken();
     //   }, [router]);
 
+    // Function to handle adding a new custom field
+    const addCustomField = () => {
+        setCustomFields([...customFields, { key: "", value: "" }]);
+    };
+
+    // Function to update custom field value
+    const updateCustomField = (index: number, field: 'key' | 'value', value: string) => {
+        const updatedFields = [...customFields];
+        updatedFields[index][field] = value;
+        setCustomFields(updatedFields);
+    };
+
     async function handleSubmit() {
         const formData = new FormData();
         formData.append("offer", offer);
@@ -61,13 +74,25 @@ export default function Page() {
         formData.append("description", description);
         formData.append("state", state);
         formData.append("zipCode", zipCode);
-        formData.append("leaseAmount", leaseAmount)
-        imageFiles.forEach((file, index) => formData.append(`files`, file));
-        pdfFiles.forEach((file, index) => formData.append(`pdfs`, file));
-
-        console.log("Form Data:", formData);
-
-
+        formData.append("leaseAmount", leaseAmount);
+    
+        imageFiles.forEach((file) => formData.append(`files`, file));
+        pdfFiles.forEach((file) => formData.append(`pdfs`, file));
+    
+        // Log the custom fields
+        console.log("Custom Fields:", customFields);
+    
+        // Append custom fields
+        customFields.forEach((field, index) => {
+            formData.append(`customFields[${index}][key]`, field.key);
+            formData.append(`customFields[${index}][value]`, field.value);
+        });
+    
+        // Convert formData entries to an array and log them
+        Array.from(formData.entries()).forEach(([key, value]) => {
+            console.log(`${key}: ${value}`);
+        });
+        
         try {
             const res = await axios.post("/api/properties/", formData, {
                 headers: {
@@ -263,6 +288,32 @@ export default function Page() {
                             onChange={(e) => setZipCode(e.target.value)}
                         />
                     </FormControl>
+                    {customFields.map((field, index) => (
+                        <div key={index} className="flex space-x-4">
+                            <FormControl variant="outlined" fullWidth>
+                                <InputLabel htmlFor={`customFieldKey-${index}`}>Custom Field Key</InputLabel>
+                                <OutlinedInput
+                                    id={`customFieldKey-${index}`}
+                                    label="Key"
+                                    value={field.key}
+                                    onChange={(e) => updateCustomField(index, "key", e.target.value)}
+                                />
+                            </FormControl>
+                            <FormControl variant="outlined" fullWidth>
+                                <InputLabel htmlFor={`customFieldValue-${index}`}>Custom Field Value</InputLabel>
+                                <OutlinedInput
+                                    id={`customFieldValue-${index}`}
+                                    label="Value"
+                                    value={field.value}
+                                    onChange={(e) => updateCustomField(index, "value", e.target.value)}
+                                />
+                            </FormControl>
+                        </div>
+                    ))}
+
+<Button type="button" onClick={addCustomField} variant="outlined">
+                        Add Custom Field
+                    </Button>
                     <Button
                         type="submit"
                         variant="contained"

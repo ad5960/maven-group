@@ -29,6 +29,7 @@ export default interface Property {
         state: string;
         zipCode: string;
     };
+
+    // Add customFields property to support dynamic fields
+    customFields?: { key: string; value: string }[];  // Make it optional in case some properties don't have custom fields
 }
-
-

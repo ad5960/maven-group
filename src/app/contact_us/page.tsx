@@ -26,6 +26,7 @@ export default function Page() {
         <div >
             <p className=" mt-5 mb-5 flex flex-1 font-bold">Email: chris@mavengroups.com</p>
             <p className="mt-5 mb-5">9350 Wilshire Blvd, Suite 203. Beverly Hills, CA 90212</p>
+            <p className="mt-5 mb-5">License ID: 02235958</p>
         </div>
 
 

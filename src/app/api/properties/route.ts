@@ -97,6 +97,20 @@ export async function POST(req: Request) {
         const state = formData.get("state")?.toString();
         const zipCode = formData.get("zipCode")?.toString();
 
+        const customFields = [];
+        let index = 0;
+
+        while (true) {
+            const key = formData.get(`customFields[${index}][key]`);
+            const value = formData.get(`customFields[${index}][value]`);
+            if (key && value) {
+                customFields.push({ key: key.toString(), value: value.toString() });
+                index++;
+            } else {
+                break; // Exit the loop when no more custom fields are found
+            }
+        }
+
         if (files.length === 0) {
             return NextResponse.json({ error: "At least one file is required." });
         }
@@ -126,6 +140,7 @@ export async function POST(req: Request) {
                 address: { street, city, state, zipCode },
                 imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
                 pdfUrls,
+                customFields
             },
         };
 
