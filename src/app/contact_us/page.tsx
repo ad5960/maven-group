@@ -25,8 +25,9 @@ export default function Page() {
         <p className="text-2xl md:text-3xl font-bold">General Inquiries</p>
         <div >
             <p className=" mt-5 mb-5 flex flex-1 font-bold">Email: chris@mavengroups.com</p>
-            <p className="mt-5 mb-5">9350 Wilshire Blvd, Suite 203. Beverly Hills, CA 90212</p>
-            <p className="mt-5 mb-5">License ID: 02235958</p>
+            <p className="mt-5 mb-2">9350 Wilshire Blvd, Suite 203,</p>
+            <p className=" mb-5">Beverly Hills, CA 90212</p>
+            <p className="mt-5 mb-5">Brokerage ID: 02235958</p>
         </div>
 
 

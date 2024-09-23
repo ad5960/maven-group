@@ -28,7 +28,7 @@ export default function Page() {
                 <div className="flex flex-col sm:flex-row">
                     <div className="flex flex-1 flex-col mx-5 sm:mx-10 my-5 sm:my-0"> {/* Increase margin for smaller screens */}
                         <p className="text-3xl sm:text-4xl font-bold mb-3">Location</p>
-                        <p>Our office is located in Culver City and serves the immediately surrounding markets of Los Angeles.</p>
+                        <p>Our office is located in  Beverly Hills and serves the immediately surrounding markets of Los Angeles.</p>
                     </div>
                     <div className="flex flex-1 flex-col mx-5 sm:mx-10 my-5 sm:my-0"> {/* Increase margin for smaller screens */}
                         <p className="text-3xl sm:text-4xl font-bold mb-3">What We Seek</p>

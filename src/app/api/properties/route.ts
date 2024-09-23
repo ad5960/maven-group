@@ -161,18 +161,14 @@ export async function GET(req: Request) {
     const offerType = searchParams.get('offerType');
     const limit = searchParams.get('limit');
     try {
-        
         const params = {
             TableName: 'properties',
             Limit: limit ? parseInt(limit) : undefined,
         };
 
         const data = await dynamodb.scan(params).promise();
-
-        // Extract the items from the response data
         let properties: Property[] = data.Items as Property[];
 
-        // Filter properties based on the query parameters
         if (location && location !== "option1") {
             properties = properties.filter(property => property.address.city === location);
         }
@@ -182,26 +178,35 @@ export async function GET(req: Request) {
         }
 
         if (offerType && offerType !== OfferType.All) {
-            properties = properties.filter(property => property.offer === offerType);
+            if (offerType === OfferType.ForSale) {
+                properties = properties.filter(property => 
+                    property.offer === OfferType.ForSale || property.offer === OfferType.ForSaleOrLease
+                );
+            } else if (offerType === OfferType.ForLease) {
+                properties = properties.filter(property => 
+                    property.offer === OfferType.ForLease || property.offer === OfferType.ForSaleOrLease
+                );
+            } else {
+                properties = properties.filter(property => property.offer === offerType);
+            }
         }
-                // Fetch the first image URL for each property
-                for (let property of properties) {
-                    if (property.imageUrl) {
-                        const fullImageUrl = property.imageUrl;
-                        const imageFolder = new URL(fullImageUrl).pathname.substring(1);
-        
-                        const imageKeys = await listObjectsInFolder(imageFolder);
-        
-                        if (imageKeys.length === 0) {
-                            console.warn("No images found in folder:", imageFolder);
-                        } else {
-        
-                            property.imageUrls = ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]]; // Assign only the first image URL
-                        }
-                    }
-                }
 
-        // Return the list of properties
+        // Fetch the first image URL for each property (unchanged)
+        for (let property of properties) {
+            if (property.imageUrl) {
+                const fullImageUrl = property.imageUrl;
+                const imageFolder = new URL(fullImageUrl).pathname.substring(1);
+
+                const imageKeys = await listObjectsInFolder(imageFolder);
+
+                if (imageKeys.length === 0) {
+                    console.warn("No images found in folder:", imageFolder);
+                } else {
+                    property.imageUrls = ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]];
+                }
+            }
+        }
+
         return NextResponse.json(properties);
     } catch (error) {
         console.error('Error retrieving properties:', error);
