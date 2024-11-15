@@ -69,7 +69,105 @@ async function uploadPdfsToS3(files: File[], folderName: string) {
     return fileUrls;
 }
 
+// export async function PATCH(req: Request) {
+//     try {
+//         const { id } = await req.json(); // Assuming you send the property ID in the request body
+//         const formData = await req.formData();
+//         const fileList = formData.getAll("files");
+//         const files = fileList.filter((item): item is File => item instanceof File);
 
+//         const pdfFileList = formData.getAll("pdfs");
+//         const pdfFiles = pdfFileList.filter((item): item is File => item instanceof File);
+
+//         const offer = formData.get("offer")?.toString();
+//         const name = formData.get("name")?.toString();
+//         const description = formData.get("description")?.toString();
+//         const leaseAmount = formData.get("leaseAmount")?.toString();
+//         const askingPrice = formData.get("askingPrice")?.toString();
+//         const pricePerSF = formData.get("pricePerSF")?.toString();
+//         const propertyType = formData.get("propertyType")?.toString();
+//         const buildingSize = formData.get("buildingSize")?.toString();
+//         const landSize = formData.get("landSize")?.toString();
+//         const yearBuilt = formData.get("yearBuilt")?.toString();
+//         const frontage = formData.get("frontage")?.toString();
+//         const parking = formData.get("parking")?.toString();
+//         const street = formData.get("street")?.toString();
+//         const city = formData.get("city")?.toString();
+//         const state = formData.get("state")?.toString();
+//         const zipCode = formData.get("zipCode")?.toString();
+
+//         const customFields = [];
+//         let index = 0;
+
+//         while (true) {
+//             const key = formData.get(`customFields[${index}][key]`);
+//             const value = formData.get(`customFields[${index}][value]`);
+//             if (key && value) {
+//                 customFields.push({ key: key.toString(), value: value.toString() });
+//                 index++;
+//             } else {
+//                 break; // Exit the loop when no more custom fields are found
+//             }
+//         }
+
+//         const params = {
+//             TableName: "properties",
+//             Key: { id }, // Use the provided ID to locate the property
+//             UpdateExpression: `set 
+//                 #name = :name, 
+//                 #description = :description, 
+//                 #offer = :offer, 
+//                 #askingPrice = :askingPrice, 
+//                 #pricePerSF = :pricePerSF, 
+//                 #propertyType = :propertyType, 
+//                 #buildingSize = :buildingSize, 
+//                 #landSize = :landSize, 
+//                 #yearBuilt = :yearBuilt, 
+//                 #frontage = :frontage, 
+//                 #parking = :parking, 
+//                 #leaseAmount = :leaseAmount, 
+//                 #address = :address`,
+//             ExpressionAttributeNames: {
+//                 "#name": "name",
+//                 "#description": "description",
+//                 "#offer": "offer",
+//                 "#askingPrice": "askingPrice",
+//                 "#pricePerSF": "pricePerSF",
+//                 "#propertyType": "propertyType",
+//                 "#buildingSize": "buildingSize",
+//                 "#landSize": "landSize",
+//                 "#yearBuilt": "yearBuilt",
+//                 "#frontage": "frontage",
+//                 "#parking": "parking",
+//                 "#leaseAmount": "leaseAmount",
+//                 "#address": "address",
+//             },
+//             ExpressionAttributeValues: {
+//                 ":name": name,
+//                 ":description": description,
+//                 ":offer": offer,
+//                 ":askingPrice": askingPrice,
+//                 ":pricePerSF": pricePerSF,
+//                 ":propertyType": propertyType,
+//                 ":buildingSize": buildingSize,
+//                 ":landSize": landSize,
+//                 ":yearBuilt": yearBuilt,
+//                 ":frontage": frontage,
+//                 ":parking": parking,
+//                 ":leaseAmount": leaseAmount,
+//                 ":address": { street, city, state, zipCode },
+//             },
+//         };
+            
+
+//         await dynamodb.update(params).promise();
+
+//         return NextResponse.json({ success: true, message: "Property updated successfully" });
+//     } catch (error) {
+//         console.error("Error updating property:", error);
+//         return NextResponse.json({ error: "Failed to update property" });
+//     }
+// }
 // POST function for adding new property
 export async function POST(req: Request) {
     try {
@@ -159,16 +257,18 @@ export async function GET(req: Request) {
     const location = searchParams.get('location');
     const propertyType = searchParams.get('type');
     const offerType = searchParams.get('offerType');
-    const limit = searchParams.get('limit');
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '9', 10); // Default to 9 items per page
+
     try {
         const params = {
             TableName: 'properties',
-            Limit: limit ? parseInt(limit) : undefined,
         };
 
         const data = await dynamodb.scan(params).promise();
         let properties: Property[] = data.Items as Property[];
 
+        // Apply filters
         if (location && location !== "option1") {
             properties = properties.filter(property => property.address.city === location);
         }
@@ -191,8 +291,17 @@ export async function GET(req: Request) {
             }
         }
 
+        // Calculate pagination values
+        const totalItems = properties.length;
+        const totalPages = Math.ceil(totalItems / limit);
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        // Slice the properties array to get the items for the current page
+        const paginatedProperties = properties.slice(startIndex, endIndex);
+
         // Fetch the first image URL for each property (unchanged)
-        for (let property of properties) {
+        for (let property of paginatedProperties) {
             if (property.imageUrl) {
                 const fullImageUrl = property.imageUrl;
                 const imageFolder = new URL(fullImageUrl).pathname.substring(1);
@@ -207,7 +316,13 @@ export async function GET(req: Request) {
             }
         }
 
-        return NextResponse.json(properties);
+        // Return paginated data along with pagination metadata
+        return NextResponse.json({
+            properties: paginatedProperties,
+            totalItems,
+            totalPages,
+            currentPage: page,
+        });
     } catch (error) {
         console.error('Error retrieving properties:', error);
         return NextResponse.json({ error: 'Failed to retrieve properties' });
@@ -215,15 +330,16 @@ export async function GET(req: Request) {
 
     async function listObjectsInFolder(folder: string): Promise<string[]> {
         const params = {
-          Bucket: process.env.AWS_S3_BUCKET_NAME as string,
-          Prefix: folder,
+            Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+            Prefix: folder,
         };
-      
+
         const response = await s3.listObjectsV2(params).promise();
-      
+
         // Filter out directory-like entries
         return response.Contents
-          ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith('/'))
-          : [];
-      }
+            ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith('/'))
+            : [];
+    }
 }
+

@@ -6,7 +6,7 @@ export async function fetchAgents() {
     return response.data;
 }
 
-export async function fetchProperties() {
-    const response = await axios.get('/api/properties/');
+export async function fetchProperties(page: number, limit: number) {
+    const response = await axios.get(`/api/properties/?page=${page}&limit=${limit}`);
     return response.data;
-}
+  }

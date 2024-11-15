@@ -1,4 +1,4 @@
-'use client';
+"use client"
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,11 +12,12 @@ import { fetchAgents, fetchProperties } from './api/helper';
 export default function DashboardPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true); // Add loading state
-  const router = useRouter();
-
-  useEffect(() => {
-    // const verifyToken = async () => {
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1); // Add state for the current page
+  const [totalPages, setTotalPages] = useState(1); // State for total number of pages
+  const itemsPerPage = 9; // Number of properties per page
+  
+      // const verifyToken = async () => {
     //   try {
     //     const response = await fetch('/api/verifyToken');
 
@@ -31,27 +32,33 @@ export default function DashboardPage() {
     //     console.error('Error during token verification or data fetching:', error);
     //     router.push('/admin/login');
     //   }
-    // };
+  // };
+  
+  const loadData = async (page: number) => {
+    setLoading(true);
+    try {
+      const [agentsData, propertiesData] = await Promise.all([
+        fetchAgents(),
+        fetchProperties(page, itemsPerPage),
+      ]);
+      setAgents(agentsData);
+      setProperties(propertiesData.properties || []);
+      setTotalPages(propertiesData.totalPages || 1); // Set the total number of pages
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setProperties([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    loadData(currentPage);
+  }, [currentPage]);
 
-    const loadData = async () => {
-      try {
-        const [agentsData, propertiesData] = await Promise.all([
-          fetchAgents(),
-          fetchProperties(),
-        ]);
-        setAgents(agentsData);
-        setProperties(propertiesData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false); // Stop loading after data is fetched
-      }
-    };
-    loadData();
-  }, [])
-    // verifyToken();
-  // }, [router]);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="flex h-screen">
@@ -87,7 +94,7 @@ export default function DashboardPage() {
                 <PropertyCard
                   key={property.id}
                   name={property.name}
-                  address = {property.address}
+                  address={property.address}
                   description={property.description}
                   imageUrl=""
                   link={`/properties/${property.id}`}
@@ -96,9 +103,28 @@ export default function DashboardPage() {
                 />
               ))}
             </div>
+            {/* Pagination */}
+            <div className="flex justify-center mt-4">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index + 1)}
+                  className={`px-3 py-1 mx-1 ${
+                    currentPage === index + 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'
+                  } rounded`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}
     </div>
   );
 }
+
+
+
+
+

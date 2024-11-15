@@ -61,7 +61,7 @@ export function CardComponent() {
           <div className="w-36 h-36 mb-3 shadow-lg rounded-full overflow-hidden relative">
             <Image
               alt="Bonnie image"
-              src="/street.jpg"
+              src="/Profile.jpg"
               layout="fill"
               className="object-cover"
             />
