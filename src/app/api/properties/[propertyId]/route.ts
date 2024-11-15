@@ -72,3 +72,100 @@ async function listObjectsInFolder(folder: string): Promise<string[]> {
     ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith('/'))
     : [];
 }
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { propertyId: string } }
+) {
+  const { propertyId } = params;
+
+  try {
+    // Parse the JSON data from the request body
+    const {
+      offer,
+      name,
+      description,
+      askingPrice,
+      pricePerSF,
+      propertyType,
+      buildingSize,
+      landSize,
+      yearBuilt,
+      frontage,
+      parking,
+      leaseAmount,
+      address,
+    } = await req.json();
+
+    if (!propertyId) {
+      return NextResponse.json(
+        { error: "Property ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Construct the DynamoDB update parameters
+    const dbParams = {
+      TableName: "properties",
+      Key: { id: propertyId }, // Use the propertyId from the URL
+      UpdateExpression: `set 
+          #offer = :offer,
+          #name = :name,
+          #description = :description,
+          #askingPrice = :askingPrice,
+          #pricePerSF = :pricePerSF,
+          #propertyType = :propertyType,
+          #buildingSize = :buildingSize,
+          #landSize = :landSize,
+          #yearBuilt = :yearBuilt,
+          #frontage = :frontage,
+          #parking = :parking,
+          #leaseAmount = :leaseAmount,
+          #address = :address`,
+      ExpressionAttributeNames: {
+        "#offer": "offer",
+        "#name": "name",
+        "#description": "description",
+        "#askingPrice": "askingPrice",
+        "#pricePerSF": "pricePerSF",
+        "#propertyType": "propertyType",
+        "#buildingSize": "buildingSize",
+        "#landSize": "landSize",
+        "#yearBuilt": "yearBuilt",
+        "#frontage": "frontage",
+        "#parking": "parking",
+        "#leaseAmount": "leaseAmount",
+        "#address": "address",
+      },
+      ExpressionAttributeValues: {
+        ":offer": offer,
+        ":name": name,
+        ":description": description,
+        ":askingPrice": askingPrice,
+        ":pricePerSF": pricePerSF,
+        ":propertyType": propertyType,
+        ":buildingSize": buildingSize,
+        ":landSize": landSize,
+        ":yearBuilt": yearBuilt,
+        ":frontage": frontage,
+        ":parking": parking,
+        ":leaseAmount": leaseAmount,
+        ":address": address,
+      },
+    };
+
+    // Update the item in DynamoDB
+    await dynamodb.update(dbParams).promise();
+
+    return NextResponse.json({
+      success: true,
+      message: "Property updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating property:", error);
+    return NextResponse.json(
+      { error: "Failed to update property" },
+      { status: 500 }
+    );
+  }
+}

@@ -69,106 +69,8 @@ async function uploadPdfsToS3(files: File[], folderName: string) {
     return fileUrls;
 }
 
-// export async function PATCH(req: Request) {
-//     try {
-//         const { id } = await req.json(); // Assuming you send the property ID in the request body
-//         const formData = await req.formData();
-//         const fileList = formData.getAll("files");
-//         const files = fileList.filter((item): item is File => item instanceof File);
 
-//         const pdfFileList = formData.getAll("pdfs");
-//         const pdfFiles = pdfFileList.filter((item): item is File => item instanceof File);
 
-//         const offer = formData.get("offer")?.toString();
-//         const name = formData.get("name")?.toString();
-//         const description = formData.get("description")?.toString();
-//         const leaseAmount = formData.get("leaseAmount")?.toString();
-//         const askingPrice = formData.get("askingPrice")?.toString();
-//         const pricePerSF = formData.get("pricePerSF")?.toString();
-//         const propertyType = formData.get("propertyType")?.toString();
-//         const buildingSize = formData.get("buildingSize")?.toString();
-//         const landSize = formData.get("landSize")?.toString();
-//         const yearBuilt = formData.get("yearBuilt")?.toString();
-//         const frontage = formData.get("frontage")?.toString();
-//         const parking = formData.get("parking")?.toString();
-//         const street = formData.get("street")?.toString();
-//         const city = formData.get("city")?.toString();
-//         const state = formData.get("state")?.toString();
-//         const zipCode = formData.get("zipCode")?.toString();
-
-//         const customFields = [];
-//         let index = 0;
-
-//         while (true) {
-//             const key = formData.get(`customFields[${index}][key]`);
-//             const value = formData.get(`customFields[${index}][value]`);
-//             if (key && value) {
-//                 customFields.push({ key: key.toString(), value: value.toString() });
-//                 index++;
-//             } else {
-//                 break; // Exit the loop when no more custom fields are found
-//             }
-//         }
-
-//         const params = {
-//             TableName: "properties",
-//             Key: { id }, // Use the provided ID to locate the property
-//             UpdateExpression: `set 
-//                 #name = :name, 
-//                 #description = :description, 
-//                 #offer = :offer, 
-//                 #askingPrice = :askingPrice, 
-//                 #pricePerSF = :pricePerSF, 
-//                 #propertyType = :propertyType, 
-//                 #buildingSize = :buildingSize, 
-//                 #landSize = :landSize, 
-//                 #yearBuilt = :yearBuilt, 
-//                 #frontage = :frontage, 
-//                 #parking = :parking, 
-//                 #leaseAmount = :leaseAmount, 
-//                 #address = :address`,
-//             ExpressionAttributeNames: {
-//                 "#name": "name",
-//                 "#description": "description",
-//                 "#offer": "offer",
-//                 "#askingPrice": "askingPrice",
-//                 "#pricePerSF": "pricePerSF",
-//                 "#propertyType": "propertyType",
-//                 "#buildingSize": "buildingSize",
-//                 "#landSize": "landSize",
-//                 "#yearBuilt": "yearBuilt",
-//                 "#frontage": "frontage",
-//                 "#parking": "parking",
-//                 "#leaseAmount": "leaseAmount",
-//                 "#address": "address",
-//             },
-//             ExpressionAttributeValues: {
-//                 ":name": name,
-//                 ":description": description,
-//                 ":offer": offer,
-//                 ":askingPrice": askingPrice,
-//                 ":pricePerSF": pricePerSF,
-//                 ":propertyType": propertyType,
-//                 ":buildingSize": buildingSize,
-//                 ":landSize": landSize,
-//                 ":yearBuilt": yearBuilt,
-//                 ":frontage": frontage,
-//                 ":parking": parking,
-//                 ":leaseAmount": leaseAmount,
-//                 ":address": { street, city, state, zipCode },
-//             },
-//         };
-            
-
-//         await dynamodb.update(params).promise();
-
-//         return NextResponse.json({ success: true, message: "Property updated successfully" });
-//     } catch (error) {
-//         console.error("Error updating property:", error);
-//         return NextResponse.json({ error: "Failed to update property" });
-//     }
-// }
-// POST function for adding new property
 export async function POST(req: Request) {
     try {
         const formData = await req.formData();
@@ -343,3 +245,20 @@ export async function GET(req: Request) {
     }
 }
 
+export async function DELETE(req: Request) {
+    try {
+        const { id } = await req.json(); // Assuming you send the property ID in the request body
+
+        const params = {
+            TableName: "properties",
+            Key: { id },
+        };
+
+        await dynamodb.delete(params).promise();
+
+        return NextResponse.json({ success: true, message: "Property deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting property:", error);
+        return NextResponse.json({ error: "Failed to delete property" });
+    }
+}

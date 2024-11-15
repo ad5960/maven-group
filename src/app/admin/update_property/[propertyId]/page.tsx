@@ -1,11 +1,18 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Button, FormControl, FormGroup, InputLabel, OutlinedInput } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-export default function Page() {
+interface UpdatePropertyFormProps {
+    propertyId: string;
+    params: {
+        propertyId: string;
+      };
+}
+export default function UpdatePropertyForm({ params }: UpdatePropertyFormProps) {
     const [offer, setOffer] = useState("");
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
     const [askingPrice, setAskingPrice] = useState("");
     const [pricePerSF, setPricePerSF] = useState("");
     const [propertyType, setPropertyType] = useState("");
@@ -16,100 +23,83 @@ export default function Page() {
     const [parking, setParking] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
-    const [leaseAmount, setLeaseAmount] = useState("")
-    const [imageFiles, setImageFiles] = useState<File[]>([]);
-    const [pdfFiles, setPdfFiles] = useState<File[]>([]);
-    const [customFields, setCustomFields] = useState<{ key: string; value: string }[]>([]);
+    const [leaseAmount, setLeaseAmount] = useState("");
     const router = useRouter();
+    const { propertyId } = params;
 
-    // useEffect(() => {
-    //     const verifyToken = async () => {
-    //       try {
-    //         const response = await fetch('/api/verifyToken');
+    // Load existing property data
+    useEffect(() => {
+        const fetchProperty = async () => {
+          try {
+            console.log("Fetching property with ID:", propertyId);
     
-    //           if (!response.ok) {
-    //               console.error('Token verification failed, redirecting to login');
-    //               throw new Error('Failed to authenticate');
-    //           }
+            const response = await axios.get(`/api/properties/${propertyId}`);
+            const property = response.data;
+            console.log("Fetched property data:", property);
+    
+            // Set the state variables with the fetched data
+            setOffer(property.offer || "");
+            setName(property.name || "");
+            setDescription(property.description || "");
+            setAskingPrice(property.askingPrice || "");
+            setPricePerSF(property.pricePerSF || "");
+            setPropertyType(property.propertyType || "");
+            setBuildingSize(property.buildingSize || "");
+            setLandSize(property.landSize || "");
+            setYearBuilt(property.yearBuilt || "");
+            setFrontage(property.frontage || "");
+            setParking(property.parking || "");
+            setLeaseAmount(property.leaseAmount || "");
+    
+            // Handle nested address object
+            if (property.address) {
+              setStreet(property.address.street || "");
+              setCity(property.address.city || "");
+              setState(property.address.state || "");
+              setZipCode(property.address.zipCode || "");
+            }
+          } catch (error) {
+            console.error("Error fetching property data:", error);
+          }
+        };
+    
+        fetchProperty();
+      }, [propertyId]);
 
-    //       } catch (error) {
-    //         console.error('Error during token verification or data fetching:', error);
-    //         router.push('/admin/login');
-    //       }
-    //     };
-    
-    //     verifyToken();
-    //   }, [router]);
-
-    // Function to handle adding a new custom field
-    const addCustomField = () => {
-        setCustomFields([...customFields, { key: "", value: "" }]);
-    };
-
-    // Function to update custom field value
-    const updateCustomField = (index: number, field: 'key' | 'value', value: string) => {
-        const updatedFields = [...customFields];
-        updatedFields[index][field] = value;
-        setCustomFields(updatedFields);
-    };
-
-    async function handleSubmit() {
-        const formData = new FormData();
-        formData.append("offer", offer);
-        formData.append("askingPrice", askingPrice);
-        formData.append("pricePerSF", pricePerSF);
-        formData.append("propertyType", propertyType);
-        formData.append("buildingSize", buildingSize);
-        formData.append("landSize", landSize);
-        formData.append("yearBuilt", yearBuilt);
-        formData.append("frontage", frontage);
-        formData.append("parking", parking);
-        formData.append("street", street);
-        formData.append("city", city);
-        formData.append("name", name);
-        formData.append("description", description);
-        formData.append("state", state);
-        formData.append("zipCode", zipCode);
-        formData.append("leaseAmount", leaseAmount);
-    
-        imageFiles.forEach((file) => formData.append(`files`, file));
-        pdfFiles.forEach((file) => formData.append(`pdfs`, file));
-    
-        // Log the custom fields
-        console.log("Custom Fields:", customFields);
-    
-        // Append custom fields
-        customFields.forEach((field, index) => {
-            formData.append(`customFields[${index}][key]`, field.key);
-            formData.append(`customFields[${index}][value]`, field.value);
-        });
-    
-        // Convert formData entries to an array and log them
-        Array.from(formData.entries()).forEach(([key, value]) => {
-            console.log(`${key}: ${value}`);
-        });
-        
+    // Handle form submission
+    const handleSubmit = async () => {
         try {
-            const res = await axios.post("/api/properties/", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            console.log("Property added:", res.data);
+            const formData = {
+                offer,
+                name,
+                description,
+                askingPrice,
+                pricePerSF,
+                propertyType,
+                buildingSize,
+                landSize,
+                yearBuilt,
+                frontage,
+                parking,
+                leaseAmount,
+                address: { street, city, state, zipCode },
+            };
+
+            const res = await axios.patch(`/api/properties/${propertyId}`, formData);
+
+            console.log("Property updated:", res.data);
             router.push("/admin/dashboard");
         } catch (error) {
-            console.error("Error adding property:", error);
+            console.error("Error updating property:", error);
         }
-    }
+    };
 
     return (
         <div className="flex justify-center">
             <div className="w-full max-w-md p-4">
-                <p className="text-2xl sm:text-4xl font-semibold my-6 text-center">Add a Property</p>
+                <p className="text-2xl sm:text-4xl font-semibold my-6 text-center">Update Property</p>
                 <FormGroup className="space-y-4">
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="offer-input">Offer</InputLabel>
@@ -120,7 +110,6 @@ export default function Page() {
                             onChange={(e) => setOffer(e.target.value)}
                         />
                     </FormControl>
-                
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="name">Name</InputLabel>
                         <OutlinedInput
@@ -134,7 +123,7 @@ export default function Page() {
                         <InputLabel htmlFor="description">Description</InputLabel>
                         <OutlinedInput
                             id="description"
-                            label="Offer"
+                            label="Description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
@@ -175,36 +164,6 @@ export default function Page() {
                             onChange={(e) => setPropertyType(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="files-input">Upload Images</InputLabel>
-                        <OutlinedInput
-                            id="files-input"
-                            type="file"
-                            inputProps={{ accept: "image/*", multiple: true }}
-                            onChange={(e) => {
-                                const target = e.target as HTMLInputElement;
-                                if (target.files) {
-                                    setImageFiles(Array.from(target.files));
-                                }
-                            }}
-                        />
-                    </FormControl>
-
-                    <FormControl variant="outlined" fullWidth>
-                        <InputLabel htmlFor="pdfs-input">Upload PDFs</InputLabel>
-                        <OutlinedInput
-                            id="pdfs-input"
-                            type="file"
-                            inputProps={{ accept: "application/pdf", multiple: true }}
-                            onChange={(e) => {
-                                const target = e.target as HTMLInputElement;
-                                if (target.files) {
-                                    setPdfFiles(Array.from(target.files));
-                                }
-                            }}
-                        />
-                    </FormControl>
-
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="buildingSize-input">Building Size</InputLabel>
                         <OutlinedInput
@@ -250,8 +209,6 @@ export default function Page() {
                             onChange={(e) => setParking(e.target.value)}
                         />
                     </FormControl>
-
-
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel htmlFor="street-input">Street</InputLabel>
                         <OutlinedInput
@@ -288,49 +245,18 @@ export default function Page() {
                             onChange={(e) => setZipCode(e.target.value)}
                         />
                     </FormControl>
-                    {customFields.map((field, index) => (
-                        <div key={index} className="flex space-x-4">
-                            <FormControl variant="outlined" fullWidth>
-                                <InputLabel htmlFor={`customFieldKey-${index}`}>Custom Field Key</InputLabel>
-                                <OutlinedInput
-                                    id={`customFieldKey-${index}`}
-                                    label="Key"
-                                    value={field.key}
-                                    onChange={(e) => updateCustomField(index, "key", e.target.value)}
-                                />
-                            </FormControl>
-                            <FormControl variant="outlined" fullWidth>
-                                <InputLabel htmlFor={`customFieldValue-${index}`}>Custom Field Value</InputLabel>
-                                <OutlinedInput
-                                    id={`customFieldValue-${index}`}
-                                    label="Value"
-                                    value={field.value}
-                                    onChange={(e) => updateCustomField(index, "value", e.target.value)}
-                                />
-                            </FormControl>
-                        </div>
-                    ))}
-
-<Button type="button" onClick={addCustomField} variant="outlined">
-                        Add Custom Field
-                    </Button>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
                         fullWidth
-                        className=" mt-6"
+                        className="mt-6"
                     >
-                        Submit
+                        Update Property
                     </Button>
                 </FormGroup>
             </div>
         </div>
     );
 }
-
-
-
-
-
