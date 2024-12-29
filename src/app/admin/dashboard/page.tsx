@@ -114,7 +114,7 @@ export default function DashboardPage() {
                     name={property.name}
                     address={property.address}
                     description={property.description}
-                    imageUrl=""
+                    imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
                     link={`/properties/${property.id}`}
                     offer={property.offer}
                     price={""}

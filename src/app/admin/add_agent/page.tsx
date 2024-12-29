@@ -10,25 +10,6 @@ export default function Page() {
     const [licenseNumber, setLicenseNumber] = useState("");
     const router = useRouter();
 
-    useEffect(() => {
-        const verifyToken = async () => {
-          try {
-            const response = await fetch('/api/verifyToken');
-    
-              if (!response.ok) {
-                  console.error('Token verification failed, redirecting to login');
-                  throw new Error('Failed to authenticate');
-              }
-
-          } catch (error) {
-            console.error('Error during token verification or data fetching:', error);
-            router.push('/admin/login');
-          }
-        };
-    
-        verifyToken();
-      }, [router]);
-
     async function handleSubmit() {
         try {
             const res = await axios.post("/api/agents/", {

@@ -96,6 +96,7 @@ export async function POST(req: Request) {
         const city = formData.get("city")?.toString();
         const state = formData.get("state")?.toString();
         const zipCode = formData.get("zipCode")?.toString();
+        const agent = formData.get("selectedAgent")?.toString();
 
         const customFields = [];
         let index = 0;
@@ -140,7 +141,8 @@ export async function POST(req: Request) {
                 address: { street, city, state, zipCode },
                 imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
                 pdfUrls,
-                customFields
+                customFields,
+                agent
             },
         };
 

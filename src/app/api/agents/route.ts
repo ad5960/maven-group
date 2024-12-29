@@ -54,20 +54,16 @@ export async function POST(req: Request) {
 // GET /api/agents
 export async function GET(req: Request) {
     try {
-        // Example: Retrieve all agents from DynamoDB
         const params = {
-            TableName: 'agents', // Replace with your DynamoDB table name
+            TableName: "agents", // Replace with your DynamoDB table name
         };
 
         const data = await dynamodb.scan(params).promise();
 
-        // Extract the items from the response data
-        const agents: Agent[] = data.Items as Agent[];
-
-        // Return the list of agents
+        const agents = data.Items || []; // Default to an empty array if no items
         return NextResponse.json(agents);
     } catch (error) {
-        console.error('Error retrieving agents:', error);
-        return NextResponse.json({ error: 'Failed to retrieve agents' });
+        console.error("Error retrieving agents:", error);
+        return NextResponse.json({ error: "Failed to retrieve agents" }, { status: 500 });
     }
 }
