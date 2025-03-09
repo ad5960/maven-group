@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Agent from "@/app/models/agent";
 import { fetchAgents } from "../dashboard/api/helper";
+// import { useAuth } from "@/app/context/AuthContext";
 
 export default function Page() {
     const [offer, setOffer] = useState("");
@@ -26,29 +27,12 @@ export default function Page() {
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
     const [leaseAmount, setLeaseAmount] = useState("")
+    const [escrow, setescrow] = useState("")
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [pdfFiles, setPdfFiles] = useState<File[]>([]);
     const [customFields, setCustomFields] = useState<{ key: string; value: string }[]>([]);
     const router = useRouter();
 
-    // useEffect(() => {
-    //     const verifyToken = async () => {
-    //       try {
-    //         const response = await fetch('/api/verifyToken');
-    
-    //           if (!response.ok) {
-    //               console.error('Token verification failed, redirecting to login');
-    //               throw new Error('Failed to authenticate');
-    //           }
-
-    //       } catch (error) {
-    //         console.error('Error during token verification or data fetching:', error);
-    //         router.push('/admin/login');
-    //       }
-    //     };
-    
-    //     verifyToken();
-    //   }, [router]);
 
     // Function to handle adding a new custom field
     const loadData = async () => {
@@ -108,6 +92,7 @@ export default function Page() {
         formData.append("zipCode", zipCode);
         formData.append("leaseAmount", leaseAmount);
         formData.append("selectedAgent", selectedAgent);
+        formData.append("escrow", escrow);
     
         imageFiles.forEach((file) => formData.append(`files`, file));
         pdfFiles.forEach((file) => formData.append(`pdfs`, file));
@@ -339,6 +324,15 @@ export default function Page() {
                             label="Zip Code"
                             value={zipCode}
                             onChange={(e) => setZipCode(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="escrow-input">In Escrow</InputLabel>
+                        <OutlinedInput
+                            id="escrow-input"
+                            label="Escrow"
+                            value={escrow}
+                            onChange={(e) => setescrow(e.target.value)}
                         />
                     </FormControl>
                     {customFields.map((field, index) => (

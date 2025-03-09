@@ -154,6 +154,7 @@ export default function Page() {
             <PropertyCard
               key={property.id}
               name={property.name}
+              escrow={property.escrow}
               description={property.description}
               address={property.address}
               imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}

@@ -9,17 +9,31 @@ import PropertyCard from "@/app/components/property_card";
 import AgentCard from "@/app/agents/[agentId]/page";
 import { fetchAgents, fetchProperties } from "./api/helper";
 import axios from "axios";
+import { useAuth } from "@/app/context/AuthContext";
+
+const ADMIN_EMAIL = "ayushdixitlko@gmail.com";
 
 export default function DashboardPage() {
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 9;
-  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/admin/login"); // Redirect to login page if not authenticated
+    } else if (user.email !== ADMIN_EMAIL) {
+      logout();
+      router.push("/admin/login"); // Redirect unauthorized users
+    }
+  }, [user, router, logout]);
 
   const loadData = async (page: number) => {
+    if (!user) return;
     setLoading(true);
     try {
       const [agentsData, propertiesData] = await Promise.all([
@@ -36,46 +50,33 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
-        // const verifyToken = async () => {
-    //   try {
-    //     const response = await fetch('/api/verifyToken');
-
-    //     if (!response.ok) {
-    //       console.error('Token verification failed, redirecting to login');
-    //       throw new Error('Failed to authenticate');
-    //     }
-
-    //     // Load data only if token is verified
-        
-    //   } catch (error) {
-    //     console.error('Error during token verification or data fetching:', error);
-    //     router.push('/admin/login');
-    //   }
-  // };
 
   useEffect(() => {
     loadData(currentPage);
-  }, [currentPage]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  }, [currentPage, user]);
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this property?");
     if (!confirmed) return;
-  
+
     try {
-      await axios.delete(`/api/properties/`, { data: { id } });
-      loadData(currentPage); // Refresh the data after deleting
+      await axios.delete("/api/properties", { data: { id } });
+      loadData(currentPage);
     } catch (error) {
       console.error("Error deleting property:", error);
     }
   };
-  
+
+  if (!user) {
+    return <div>Redirecting...</div>;
+  }
 
   return (
     <div className="flex h-screen">
+      <button onClick={logout} className="absolute top-4 right-4 px-4 py-2 bg-red-600 text-white rounded">
+        Logout
+      </button>
+
       {loading ? (
         <div className="flex items-center justify-center w-full h-full">
           <span>Loading...</span>
@@ -97,7 +98,9 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
+
           <div className="w-1/8 bg-gray-200"></div> {/* Dividing line */}
+
           <div className="w-3/4 p-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold">Properties</h2>
@@ -107,15 +110,17 @@ export default function DashboardPage() {
                 </button>
               </Link>
             </div>
+
             <div className="grid grid-cols-3 gap-4">
               {properties.map((property) => (
                 <div key={property.id} className="border p-4 rounded shadow">
                   <PropertyCard
                     name={property.name}
+                    
                     address={property.address}
                     description={property.description}
-                    imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
-                    link={`/properties/${property.id}`}
+                    imageUrl={property.imageUrls?.length ? property.imageUrls[0] : ""}
+                    link={`/properties/${property.id}`} // ✅ Fixed template literal issue
                     offer={property.offer}
                     price={""}
                   />
@@ -135,31 +140,9 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            {/* Pagination */}
-            <div className="flex justify-center mt-4">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`px-3 py-1 mx-1 ${
-                    currentPage === index + 1
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-300 text-black"
-                  } rounded`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
           </div>
         </>
       )}
     </div>
   );
 }
-
-
-
-
-
-

@@ -97,6 +97,7 @@ export async function POST(req: Request) {
         const state = formData.get("state")?.toString();
         const zipCode = formData.get("zipCode")?.toString();
         const agent = formData.get("selectedAgent")?.toString();
+        const escrow = formData.get("escrow")?.toString();
 
         const customFields = [];
         let index = 0;
@@ -142,7 +143,8 @@ export async function POST(req: Request) {
                 imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
                 pdfUrls,
                 customFields,
-                agent
+                agent,
+                escrow
             },
         };
 

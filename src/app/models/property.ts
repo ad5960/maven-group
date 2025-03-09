@@ -30,6 +30,7 @@ export default interface Property {
         zipCode: string;
     };
     agent: string;
+    escrow: string;
 
     // Add customFields property to support dynamic fields
     customFields?: { key: string; value: string }[];  // Make it optional in case some properties don't have custom fields
