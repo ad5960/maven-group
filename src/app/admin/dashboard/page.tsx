@@ -11,10 +11,10 @@ import { fetchAgents, fetchProperties } from "./api/helper";
 import axios from "axios";
 import { useAuth } from "@/app/context/AuthContext";
 
-const ADMIN_EMAIL = "ayushdixitlko@gmail.com";
+const ADMIN_EMAIL = "ayushdixitlko@gmail.com"; // Must be the same across your app
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const router = useRouter();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -23,14 +23,17 @@ export default function DashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 9;
 
+  // Only perform redirection after auth state is done loading
   useEffect(() => {
-    if (!user) {
-      router.push("/admin/login"); // Redirect to login page if not authenticated
-    } else if (user.email !== ADMIN_EMAIL) {
-      logout();
-      router.push("/admin/login"); // Redirect unauthorized users
+    if (!authLoading) {
+      if (!user) {
+        router.push("/admin/login"); // Redirect if not authenticated
+      } else if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+        logout();
+        router.push("/admin/login"); // Redirect if unauthorized
+      }
     }
-  }, [user, router, logout]);
+  }, [user, authLoading, router, logout]);
 
   const loadData = async (page: number) => {
     if (!user) return;
@@ -66,6 +69,11 @@ export default function DashboardPage() {
       console.error("Error deleting property:", error);
     }
   };
+
+  // Show auth loading state if auth is still being determined
+  if (authLoading) {
+    return <div>Loading auth state...</div>;
+  }
 
   if (!user) {
     return <div>Redirecting...</div>;
@@ -116,11 +124,10 @@ export default function DashboardPage() {
                 <div key={property.id} className="border p-4 rounded shadow">
                   <PropertyCard
                     name={property.name}
-                    
                     address={property.address}
                     description={property.description}
                     imageUrl={property.imageUrls?.length ? property.imageUrls[0] : ""}
-                    link={`/properties/${property.id}`} // ✅ Fixed template literal issue
+                    link={`/properties/${property.id}`}
                     offer={property.offer}
                     price={""}
                   />

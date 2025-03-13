@@ -7,8 +7,6 @@ import { useEffect, useState } from "react";
 import Property from "./models/property";
 import axios from "axios";
 import PropertyCard from "./components/property_card";
-import AdSense from "./components/AdSense";
-import GoogleAdUnit from "./components/GoogleAdUnit";
 
 export default function Page() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -78,17 +76,6 @@ export default function Page() {
                   className="shadow-lg"
                 />
               </div>
-            </div>
-
-            <div w-full h-auto my-4>
-              <GoogleAdUnit>
-              <ins className="adsbygoogle"
-              style={{display:"block"}}
-      data-ad-client="ca-pub-6753062352106521"
-      data-ad-slot="8947844357"
-      data-ad-format="auto"
-      data-full-width-responsive="true"></ins>
-            </GoogleAdUnit>
             </div>
             <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground flex flex-col justify-center">
               <h1 className="text-lg sm:text-xl font-bold">We are Mavens</h1>
@@ -168,9 +155,6 @@ export default function Page() {
             </Link>
           </div>
         </div>
-        <div w-full h-auto my-4>
-            <AdSense pId="6753062352106521" adSlot="8947844357"/>
-            </div>
         <Footer />
       </div>
     </>
