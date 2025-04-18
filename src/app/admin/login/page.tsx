@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/app/lib/firebaseConfig";
 
-const ADMIN_EMAIL = "ayushdixitlko@gmail.com";
+const ADMIN_EMAIL = "mavianchris@gmail.com";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,12 +19,13 @@ export default function LoginPage() {
 
     if (email !== ADMIN_EMAIL) {
       setError("Access denied: Unauthorized email.");
+      console.log(email, ADMIN_EMAIL)
       return;
     }
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/admin/dashboard"); // ✅ Redirect to dashboard after login
+      router.push("/admin/dashboard");
     } catch (err: any) {
       setError("Invalid email or password");
     }
@@ -62,7 +63,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={!email || !password} // ✅ Prevent empty form submission
+            disabled={!email || !password}
             className={`w-full px-4 py-2 rounded ${
               email && password ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
             }`}

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/app/lib/firebaseConfig";
 
-const ADMIN_EMAIL = "ayushdixitlko@gmail.com"; // ✅ Ensure this matches LoginPage.tsx
+const ADMIN_EMAIL = "mavianchris@gmail.com";
 
 interface AuthContextType {
   user: User | null;

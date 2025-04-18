@@ -11,7 +11,7 @@ import { fetchAgents, fetchProperties } from "./api/helper";
 import axios from "axios";
 import { useAuth } from "@/app/context/AuthContext";
 
-const ADMIN_EMAIL = "ayushdixitlko@gmail.com"; // Must be the same across your app
+const ADMIN_EMAIL = "mavianchris@gmail.com";
 
 export default function DashboardPage() {
   const { user, logout, loading: authLoading } = useAuth();
@@ -23,14 +23,13 @@ export default function DashboardPage() {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 9;
 
-  // Only perform redirection after auth state is done loading
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
-        router.push("/admin/login"); // Redirect if not authenticated
+        router.push("/admin/login");
       } else if (user.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
         logout();
-        router.push("/admin/login"); // Redirect if unauthorized
+        router.push("/admin/login");
       }
     }
   }, [user, authLoading, router, logout]);
@@ -125,6 +124,7 @@ export default function DashboardPage() {
                   <PropertyCard
                     name={property.name}
                     address={property.address}
+                    escrow={property.escrow}
                     description={property.description}
                     imageUrl={property.imageUrls?.length ? property.imageUrls[0] : ""}
                     link={`/properties/${property.id}`}

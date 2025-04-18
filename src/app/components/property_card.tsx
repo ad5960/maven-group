@@ -25,6 +25,7 @@ interface PropertyCardProps {
 
 const defaultImg = "https://d2m41b1lxy01wm.cloudfront.net/LANight.jpg"
 
+
 export default function PropertyCard({
     name,
     imageUrl,
@@ -35,6 +36,7 @@ export default function PropertyCard({
     address,
     escrow
 }: PropertyCardProps) {
+    console.log("🕵️ escrow prop is:", escrow);
     
     return (
         <div className='bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] mb-6'>

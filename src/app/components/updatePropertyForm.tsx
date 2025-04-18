@@ -20,6 +20,7 @@ export default function UpdatePropertyForm({propertyId}: UpdatePropertyFormProps
     const [parking, setParking] = useState("");
     const [street, setStreet] = useState("");
     const [city, setCity] = useState("");
+    const [escrow, setEscrow] = useState("")
     const [state, setState] = useState("");
     const [zipCode, setZipCode] = useState("");
     const [leaseAmount, setLeaseAmount] = useState("");
@@ -29,13 +30,11 @@ export default function UpdatePropertyForm({propertyId}: UpdatePropertyFormProps
     useEffect(() => {
         const fetchProperty = async () => {
           try {
-            console.log("Fetching property with ID:", propertyId);
     
             const response = await axios.get(`/api/properties/${propertyId}`);
-            const property = response.data;
-            console.log("Fetched property data:", property);
-    
-            // Set the state variables with the fetched data
+              const property = response.data;
+              console.log(property)
+
             setOffer(property.offer || "");
             setName(property.name || "");
             setDescription(property.description || "");
@@ -48,6 +47,7 @@ export default function UpdatePropertyForm({propertyId}: UpdatePropertyFormProps
             setFrontage(property.frontage || "");
             setParking(property.parking || "");
             setLeaseAmount(property.leaseAmount || "");
+            setEscrow(property.escrow || "");  
     
             // Handle nested address object
             if (property.address) {
@@ -80,6 +80,7 @@ export default function UpdatePropertyForm({propertyId}: UpdatePropertyFormProps
                 frontage,
                 parking,
                 leaseAmount,
+                escrow,
                 address: { street, city, state, zipCode },
             };
 
@@ -176,6 +177,15 @@ export default function UpdatePropertyForm({propertyId}: UpdatePropertyFormProps
                             label="Land Size"
                             value={landSize}
                             onChange={(e) => setLandSize(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl variant="outlined" fullWidth>
+                        <InputLabel htmlFor="escrow-input">Escrow</InputLabel>
+                        <OutlinedInput
+                            id="escrow-input"
+                            label="Escrow"
+                            value={escrow}
+                            onChange={(e) => setEscrow(e.target.value)}
                         />
                     </FormControl>
                     <FormControl variant="outlined" fullWidth>

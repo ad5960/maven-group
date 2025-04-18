@@ -95,6 +95,7 @@ export async function PATCH(
       parking,
       leaseAmount,
       address,
+      escrow,
     } = await req.json();
 
     if (!propertyId) {
@@ -109,19 +110,20 @@ export async function PATCH(
       TableName: "properties",
       Key: { id: propertyId }, // Use the propertyId from the URL
       UpdateExpression: `set 
-          #offer = :offer,
-          #name = :name,
-          #description = :description,
-          #askingPrice = :askingPrice,
-          #pricePerSF = :pricePerSF,
-          #propertyType = :propertyType,
-          #buildingSize = :buildingSize,
-          #landSize = :landSize,
-          #yearBuilt = :yearBuilt,
-          #frontage = :frontage,
-          #parking = :parking,
-          #leaseAmount = :leaseAmount,
-          #address = :address`,
+      #offer = :offer,
+      #name = :name,
+      #description = :description,
+      #askingPrice = :askingPrice,
+      #pricePerSF = :pricePerSF,
+      #propertyType = :propertyType,
+      #buildingSize = :buildingSize,
+      #landSize = :landSize,
+      #yearBuilt = :yearBuilt,
+      #frontage = :frontage,
+      #parking = :parking,
+      #leaseAmount = :leaseAmount,
+      #address = :address,
+      #escrow = :escrow`,
       ExpressionAttributeNames: {
         "#offer": "offer",
         "#name": "name",
@@ -136,6 +138,7 @@ export async function PATCH(
         "#parking": "parking",
         "#leaseAmount": "leaseAmount",
         "#address": "address",
+        "#escrow" : "escrow",
       },
       ExpressionAttributeValues: {
         ":offer": offer,
@@ -151,6 +154,7 @@ export async function PATCH(
         ":parking": parking,
         ":leaseAmount": leaseAmount,
         ":address": address,
+        ":escrow": escrow,
       },
     };
 
