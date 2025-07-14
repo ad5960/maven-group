@@ -7,6 +7,9 @@ import Footer from "@/app/components/footer";
 import { EmblaOptionsType } from "embla-carousel";
 import EmblaCarousel from "@/app/components/carousel";
 import { CardComponent } from "@/app/components/card";
+import useSWR from 'swr';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function SingleProperty({
   params,
@@ -14,27 +17,25 @@ export default function SingleProperty({
   params: { propertyId: string };
 }) {
   const id = params.propertyId;
-  const [property, setProperty] = useState<Property | null>(null);
-  const fetchInitiated = useRef(false);
 
-  useEffect(() => {
-    async function fetchProperty() {
-      if (id && !fetchInitiated.current) {
-        fetchInitiated.current = true;
-        try {
-          const res = await axios.get(`/api/properties/${id}`);
-          setProperty(res.data);
-        } catch (error) {
-          console.error("Error fetching property:", error);
-        }
-      }
+  const { data: property, error, isLoading } = useSWR(
+    id ? `/api/properties/${id}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
     }
+  );
 
-    fetchProperty();
-  }, [id]);
+  if (error) {
+    return <div>Error loading property</div>;
+  }
 
-  if (!property) {
-    return <div>Loading...</div>;
+  if (isLoading || !property) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+      </div>
+    );
   }
 
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
@@ -51,7 +52,7 @@ export default function SingleProperty({
     { key: "Land Size", value: property.landSize },
     { key: "Year Built", value: property.yearBuilt },
     { key: "Parking", value: property.parking },
-    ...(property.customFields ? property.customFields.map((field) => ({
+    ...(property.customFields ? property.customFields.map((field: any) => ({
       key: field.key,
       value: field.value,
     })) : [])
@@ -92,7 +93,7 @@ export default function SingleProperty({
           <h1 className="text-4xl font-bold pb-5 mt-10">Download</h1>
           <ul>
             {property.pdfUrls && property.pdfUrls.length > 0 ? (
-              property.pdfUrls.map((pdfUrl, index) => (
+              property.pdfUrls.map((pdfUrl: string, index: number) => (
                 <li key={index}>
                   <a className="text-blue-700" href={pdfUrl} target="_blank" rel="noopener noreferrer">
                     {`Brochure ${index + 1}`}

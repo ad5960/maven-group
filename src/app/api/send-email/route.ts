@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
   const mailOptions = {
     from: email,
-    to: 'ayushdixitlko@gmail.com', // your receiving email address
+    to: 'chris@maviancre.com', // your receiving email address
     subject: 'New Contact Form Submission',
     text: `
       First Name: ${firstName}

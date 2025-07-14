@@ -42,7 +42,7 @@ export default function Page() {
                     </div>
                     <div className="flex flex-1 flex-col mx-5 sm:mx-10 my-5 sm:my-0"> {/* Increase margin for smaller screens */}
                         <p className="text-3xl sm:text-4xl font-bold mb-3">Apply</p>
-                        <p>To apply, please send a cover letter and resume to: chris@mavengroups.com</p>
+                        <p>To apply, please send a cover letter and resume to: chris@maviancre.com</p>
                     </div>
                 </div>
             </div>

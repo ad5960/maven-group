@@ -7,6 +7,9 @@ import axios from "axios";
 import Property, { OfferType } from "../models/property";
 import { LOCATIONS, PROPERTY_TYPES } from "../lib/constants";
 import Footer from "../components/footer";
+import useSWR from 'swr';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function Page() {
   const [offerType, setOfferType] = useState<OfferType>(OfferType.All);
@@ -18,54 +21,31 @@ export default function Page() {
     offerType: OfferType.All,
   });
 
-  const [properties, setProperties] = useState<Property[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<any>(null);
-
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const itemsPerPage = 9;
 
+  // Build query string for SWR
+  const queryString = () => {
+    const params = new URLSearchParams();
+    if (searchParams.location !== "option1") params.append("location", searchParams.location);
+    if (searchParams.propertyType !== "option1") params.append("type", searchParams.propertyType);
+    if (searchParams.offerType !== OfferType.All) params.append("offerType", searchParams.offerType);
+    params.append("page", String(currentPage));
+    params.append("limit", String(itemsPerPage));
+    return `/api/properties/?${params.toString()}`;
+  };
+
+  const { data, error, isLoading } = useSWR(queryString(), fetcher, {
+    revalidateOnFocus: false,
+  });
+
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchProperties = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const res = await axios.get("/api/properties/", {
-          params: {
-            location: searchParams.location === "option1" ? undefined : searchParams.location,
-            type: searchParams.propertyType === "option1" ? undefined : searchParams.propertyType,
-            offerType: searchParams.offerType === OfferType.All ? undefined : searchParams.offerType,
-            page: currentPage,
-            limit: itemsPerPage,
-          },
-        });
-
-        if (isMounted) {
-          setProperties(res.data.properties);
-          setTotalPages(res.data.totalPages);
-          setIsLoading(false);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    // Fetch properties immediately
-    fetchProperties();
-
-    return () => {
-      isMounted = false;
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, currentPage]);
+    if (data && data.totalPages) {
+      setTotalPages(data.totalPages);
+    }
+  }, [data]);
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLocation(e.target.value);
@@ -98,107 +78,175 @@ export default function Page() {
     setCurrentPage(page);
   };
 
+  const handleReset = () => {
+    setLocation("option1");
+    setPropertyType("option1");
+    setOfferType(OfferType.All);
+    setSearchParams({
+      location: "option1",
+      propertyType: "option1",
+      offerType: OfferType.All,
+    });
+    setCurrentPage(1);
+  };
+
   if (error) return <div>Error loading properties</div>;
-  if (isLoading || !properties) return <div>Loading...</div>;
+  if (isLoading || !data || !data.properties) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+      </div>
+    );
+  }
+
+  const properties = data.properties;
 
   return (
     <>
       <Navbar />
-      <div className="w-full h-10 mt-32 flex justify-center items-center">
+      <div className="w-full h-10 mt-44 flex justify-center items-center">
         <span className="w-11/12 md:w-1/2">
           <p className="text-2xl md:text-4xl font-bold text-center">Properties</p>
         </span>
       </div>
       <div className="flex w-full justify-center items-center my-10">
-        <div className="flex flex-col lg:flex-row w-full lg:w-2/3 bg-slate-300 justify-around items-center rounded-lg p-2">
-          <select
-            className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 border border-slate-400 rounded-lg"
-            value={location}
-            onChange={handleLocationChange}
-          >
-            <option value="option1">Location</option>
-            {LOCATIONS.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
-          <select
-            className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 border border-slate-400 rounded-lg"
-            value={propertyType}
-            onChange={handlePropertyTypeChange}
-          >
-            <option value="option1">Property Type</option>
-            {PROPERTY_TYPES.map((ptype) => (
-              <option key={ptype} value={ptype}>{ptype}</option>
-            ))}
-          </select>
-          <button
-            className="w-full lg:w-1/3 h-10 mx-2 my-2 lg:my-0 bg-slate-700 text-white rounded-lg"
-            onClick={handleUpdate}
-          > Update
-          </button>
+        <div className="w-full lg:w-2/3 bg-gradient-to-r from-gray-50 to-gray-100 shadow-xl rounded-2xl p-8 border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800 mb-6 text-center">Filter Properties</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Location</label>
+              <select
+                className="w-full h-11 px-3 border-0 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-200 text-gray-700"
+                value={location}
+                onChange={handleLocationChange}
+              >
+                <option value="option1">All Locations</option>
+                {LOCATIONS.map((loc) => (
+                  <option key={loc} value={loc}>{loc}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Property Type</label>
+              <select
+                className="w-full h-11 px-3 border-0 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-200 text-gray-700"
+                value={propertyType}
+                onChange={handlePropertyTypeChange}
+              >
+                <option value="option1">All Types</option>
+                {PROPERTY_TYPES.map((ptype) => (
+                  <option key={ptype} value={ptype}>{ptype}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">Offer Type</label>
+              <select
+                className="w-full h-11 px-3 border-0 rounded-lg bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-200 text-gray-700"
+                value={offerType}
+                onChange={(e) => handleOfferTypeChange(e.target.value as OfferType)}
+              >
+                <option value={OfferType.All}>All Offers</option>
+                <option value={OfferType.ForSale}>For Sale</option>
+                <option value={OfferType.ForLease}>For Lease</option>
+                <option value={OfferType.ForSaleOrLease}>For Sale or Lease</option>
+                <option value={OfferType.Sold}>Sold</option>
+              </select>
+            </div>
+            
+            <div className="md:col-span-2 lg:col-span-1">
+              <button
+                className="w-full h-11 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
+                onClick={handleUpdate}
+              > 
+                Search
+              </button>
+            </div>
+            
+            <div className="md:col-span-2 lg:col-span-1">
+              <button
+                className="w-full h-11 bg-transparent text-gray-600 rounded-lg hover:bg-gray-200 transition-all duration-200 font-medium text-sm border border-gray-300"
+                onClick={handleReset}
+              > 
+                Clear All
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      <div className="flex w-full justify-center items-center my-2">
-        <div className="flex flex-col md:flex-row w-11/12 md:w-2/3 justify-start items-center space-y-2 md:space-y-0 md:space-x-2">
-          <p className="text-lg md:text-xl">Select: </p>
-          <BlackTag offerType={OfferType.All} onClick={() => handleOfferTypeChange(OfferType.All)} />
-          <BlackTag offerType={OfferType.ForLease} onClick={() => handleOfferTypeChange(OfferType.ForLease)} />
-          <BlackTag offerType={OfferType.ForSale} onClick={() => handleOfferTypeChange(OfferType.ForSale)} />
-          <BlackTag offerType={OfferType.ForSaleOrLease} onClick={() => handleOfferTypeChange(OfferType.ForSaleOrLease)} />
-          <BlackTag offerType={OfferType.Sold} onClick={() => handleOfferTypeChange(OfferType.Sold)} />
-        </div>
-      </div>
-      <div className="flex justify-center items-center my-8">
-        <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
-          {properties.map((property: Property) => (
-            <PropertyCard
-              key={property.id}
-              name={property.name}
-              escrow={property.escrow}
-              description={property.description}
-              address={property.address}
-              imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
-              link={`/properties/${property.id}`}
-              offer={property.offer}
-              price={
-                property.offer === "For Sale" || property.offer === "Sold"
-                  ? property.askingPrice
-                  : property.offer === "For Lease"
-                  ? property.pricePerSF
-                  : property.askingPrice + " or " + property.pricePerSF
-              }
-            />
-          ))}
-        </div>
-      </div>
-      {/* Pagination Controls */}
-      <div className="flex justify-center items-center my-4">
-        <div className="flex space-x-2">
-          <button
-            className="px-3 py-1 bg-gray-200 rounded"
-            onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+
+      {properties.length === 0 ? (
+        <div className="flex flex-col items-center justify-center my-16">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold text-gray-700 mb-4">No Properties Found</h3>
+            <p className="text-gray-500 mb-6">
+              No properties match your current filters. Try adjusting your search criteria or reset the filters.
+            </p>
             <button
-              key={page}
-              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-              onClick={() => handlePageChange(page)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleReset}
             >
-              {page}
+              Reset Filters
             </button>
-          ))}
-          <button
-            className="px-3 py-1 bg-gray-200 rounded"
-            onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="flex justify-center items-center my-8">
+            <div className="py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8">
+              {properties.map((property: Property) => (
+                <PropertyCard
+                  key={property.id}
+                  name={property.name}
+                  escrow={property.escrow}
+                  description={property.description}
+                  address={property.address}
+                  imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ''}
+                  link={`/properties/${property.id}`}
+                  offer={property.offer}
+                  price={
+                    property.offer === "For Sale" || property.offer === "Sold"
+                      ? property.askingPrice
+                      : property.offer === "For Lease"
+                      ? property.pricePerSF
+                      : property.askingPrice + " or " + property.pricePerSF
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          {/* Pagination Controls */}
+          <div className="flex justify-center items-center my-4">
+            <div className="flex space-x-2">
+              <button
+                className="px-3 py-1 bg-gray-200 rounded"
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <button
+                  key={page}
+                  className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                className="px-3 py-1 bg-gray-200 rounded"
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
       <Footer />
     </>
   );

@@ -7,30 +7,16 @@ import { useEffect, useState } from "react";
 import Property from "./models/property";
 import axios from "axios";
 import PropertyCard from "./components/property_card";
+import useSWR from 'swr';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function Page() {
-  const [properties, setProperties] = useState<Property[]>([]);
+  const { data, error, isLoading } = useSWR('/api/properties/?limit=6', fetcher, {
+    revalidateOnFocus: false,
+  });
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const res = await axios.get("/api/properties/", {
-          params: {
-            limit: 6,
-          },
-        });
-  
-        console.log("API Response:", res.data);
-  
-        const { properties: allProperties } = res.data;
-        setProperties(allProperties);
-      } catch (error) {
-        console.error("Error fetching properties:", error);
-      }
-    };
-  
-    fetchProperties();
-  }, []);
+  const properties = data?.properties || [];
 
   return (
     <>
@@ -44,24 +30,6 @@ export default function Page() {
             objectFit="cover"
             className="filter brightness-75"
           />
-          <div className="absolute inset-0 flex flex-col justify-center items-center">
-            <p className="text-white text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold">
-              <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-                maven
-              </span>
-              <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-                : noun
-              </span>
-              <br />
-              <span className="text-lg sm:text-2xl md:text-2xl lg:text-3xl typing-effect-maven">
-                ma-ven
-              </span>
-              <br />
-              <span className="text-sm sm:text-md md:text-base lg:text-2xl typing-effect">
-                : One who is experienced or knowledgeable: EXPERT
-              </span>
-            </p>
-          </div>
         </div>
 
         <section className="mt-20">
@@ -78,7 +46,7 @@ export default function Page() {
               </div>
             </div>
             <div className="md:flex-1 w-full p-4 sm:p-10 bg-customBackground flex flex-col justify-center">
-              <h1 className="text-lg sm:text-xl font-bold">We are Mavens</h1>
+              <h1 className="text-lg sm:text-xl font-bold">We are Mavian</h1>
               <p className="text-sm sm:text-md mt-2 sm:mt-4">
                 As experts in property sales, landlord representation, and tenant
                 representation, we bring a wealth of experience and a deep

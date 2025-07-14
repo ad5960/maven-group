@@ -20,12 +20,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Checking authentication state...");
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log("onAuthStateChanged triggered:", currentUser);
       if (currentUser) {
-        console.log("User logged in:", currentUser.email);
         if (currentUser.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
           setUser(currentUser);
         } else {

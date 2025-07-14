@@ -369,3 +369,7 @@ body {
 .btn:hover span {
   color: #ffffff;
 }
+
+.embla__container:has(> .embla__slide:only-child) {
+  justify-content: center;
+}

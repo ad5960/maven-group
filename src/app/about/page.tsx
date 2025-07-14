@@ -37,7 +37,7 @@ export default function Page() {
 
         <p className="text-center text-base sm:text-xl mt-5">
           {/* Adjust text size for smaller screens */}
-          <strong>Maven Group</strong>, founded by <strong>Christopher Mavian</strong>, is a dynamic
+          <strong>Mavian</strong>, founded by <strong>Christopher Mavian</strong>, is a dynamic
           force in the commercial real estate industry. Born and raised in the vibrant city of Los
           Angeles, California, Christopher brings a wealth of knowledge and experience to the table.
           Graduating Magna Cum Laude with a bachelor&apos;s degree in Psychology from Cal State
@@ -54,10 +54,10 @@ export default function Page() {
           where he managed the Westside office and mentored numerous agents.
           <br />
           <br />
-          Drawing from his extensive background, Christopher founded Maven Group, a testament to his
+          Drawing from his extensive background, Christopher founded Mavian, a testament to his
           commitment to providing top-tier services in property valuation, landlord and tenant
           representation, site selection, and real property exchange counseling. With Christopher at
-          the helm, Maven Group is poised to redefine standards of excellence in the commercial real
+          the helm, Mavian is poised to redefine standards of excellence in the commercial real
           estate landscape.
           <br />
           <br />

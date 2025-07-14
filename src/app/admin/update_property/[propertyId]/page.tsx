@@ -1,4 +1,4 @@
-import UpdatePropertyForm from "@/app/components/updatePropertyForm";
+import PropertyForm from "@/app/components/PropertyForm";
 
 interface PageProps {
     params: {
@@ -11,5 +11,5 @@ interface PageProps {
   
     console.log("Navigated to update page for property ID:", propertyId);
   
-    return <UpdatePropertyForm propertyId={propertyId} />;
+    return <PropertyForm mode="update" propertyId={propertyId} />;
   }

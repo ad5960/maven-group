@@ -83,7 +83,102 @@ export function CardComponent({ agentName }: { agentName: string }) {
       <Modal show={isOpen} onClose={closeModal}>
         <Modal.Header>Contact Form</Modal.Header>
         <Modal.Body>
-          {/* Contact form fields */}
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                First Name *
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  errors.firstName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your first name"
+              />
+              {errors.firstName && (
+                <p className="text-red-500 text-sm mt-1">First name is required</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  errors.lastName ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your last name"
+              />
+              {errors.lastName && (
+                <p className="text-red-500 text-sm mt-1">Last name is required</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email *
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your email"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">Email is required</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                Phone *
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your phone number"
+              />
+              {errors.phone && (
+                <p className="text-red-500 text-sm mt-1">Phone number is required</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+                Message *
+              </label>
+              <textarea
+                id="message"
+                value={formData.message}
+                onChange={handleChange}
+                rows={4}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
+                  errors.message ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Enter your message"
+              />
+              {errors.message && (
+                <p className="text-red-500 text-sm mt-1">Message is required</p>
+              )}
+            </div>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleSubmit} className="w-full bg-cyan-700 text-white hover:bg-cyan-800 focus:ring-4 focus:ring-cyan-300">

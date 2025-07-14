@@ -163,24 +163,38 @@ export async function GET(req: Request) {
     const location = searchParams.get('location');
     const propertyType = searchParams.get('type');
     const offerType = searchParams.get('offerType');
+    const activeOnly = searchParams.get('activeOnly') === 'true';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '9', 10); // Default to 9 items per page
 
+    // Validate pagination parameters
+    if (page < 1 || limit < 1 || limit > 100) {
+        return NextResponse.json({ 
+            error: 'Invalid pagination parameters. Page must be >= 1, limit must be between 1 and 100.' 
+        }, { status: 400 });
+    }
+
     try {
-        const params = {
-            TableName: 'properties',
-        };
+        let properties: Property[] = [];
 
-        const data = await dynamodb.scan(params).promise();
-        let properties: Property[] = data.Items as Property[];
-
-        // Apply filters
+        // Use optimized query when possible, fallback to scan
         if (location && location !== "option1") {
-            properties = properties.filter(property => property.address.city === location);
+            // Try to use GSI for location-based queries
+            properties = await queryPropertiesByLocation(location);
+        } else {
+            // Fallback to scan for other cases
+            const data = await dynamodb.scan({ TableName: 'properties' }).promise();
+            properties = data.Items as Property[];
         }
 
+        // Apply remaining filters
         if (propertyType && propertyType !== "option1") {
             properties = properties.filter(property => property.propertyType === propertyType);
+        }
+
+        // Filter for active properties only (exclude Sold properties)
+        if (activeOnly) {
+            properties = properties.filter(property => property.offer !== OfferType.Sold);
         }
 
         if (offerType && offerType !== OfferType.All) {
@@ -197,6 +211,16 @@ export async function GET(req: Request) {
             }
         }
 
+        // Sort properties: active properties first, then sold properties
+        properties.sort((a, b) => {
+            const aIsActive = a.offer !== OfferType.Sold;
+            const bIsActive = b.offer !== OfferType.Sold;
+            
+            if (aIsActive && !bIsActive) return -1; // a comes first
+            if (!aIsActive && bIsActive) return 1;  // b comes first
+            return 0; // both are same type, maintain original order
+        });
+
         // Calculate pagination values
         const totalItems = properties.length;
         const totalPages = Math.ceil(totalItems / limit);
@@ -206,21 +230,31 @@ export async function GET(req: Request) {
         // Slice the properties array to get the items for the current page
         const paginatedProperties = properties.slice(startIndex, endIndex);
 
-        // Fetch the first image URL for each property (unchanged)
-        for (let property of paginatedProperties) {
+        // Optimize image loading with parallel processing
+        const imagePromises = paginatedProperties.map(async (property) => {
             if (property.imageUrl) {
                 const fullImageUrl = property.imageUrl;
                 const imageFolder = new URL(fullImageUrl).pathname.substring(1);
 
-                const imageKeys = await listObjectsInFolder(imageFolder);
-
-                if (imageKeys.length === 0) {
-                    console.warn("No images found in folder:", imageFolder);
-                } else {
-                    property.imageUrls = ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]];
+                try {
+                    const imageKeys = await listObjectsInFolder(imageFolder);
+                    if (imageKeys.length === 0) {
+                        console.warn("No images found in folder:", imageFolder);
+                        property.imageUrls = [];
+                    } else {
+                        property.imageUrls = ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]];
+                    }
+                } catch (error) {
+                    console.error("Error loading images for property:", property.id, error);
+                    property.imageUrls = [];
                 }
+            } else {
+                property.imageUrls = [];
             }
-        }
+        });
+
+        // Wait for all image loading to complete
+        await Promise.all(imagePromises);
 
         // Return paginated data along with pagination metadata
         return NextResponse.json({
@@ -231,7 +265,33 @@ export async function GET(req: Request) {
         });
     } catch (error) {
         console.error('Error retrieving properties:', error);
-        return NextResponse.json({ error: 'Failed to retrieve properties' });
+        return NextResponse.json({ error: 'Failed to retrieve properties' }, { status: 500 });
+    }
+
+    // Helper function to query properties by location using GSI
+    async function queryPropertiesByLocation(location: string): Promise<Property[]> {
+        try {
+            // Try to use GSI if it exists
+            const params = {
+                TableName: 'properties',
+                IndexName: 'city-index', // You'll need to create this GSI
+                KeyConditionExpression: 'city = :city',
+                ExpressionAttributeValues: {
+                    ':city': location.toLowerCase()
+                }
+            };
+            
+            const data = await dynamodb.query(params).promise();
+            return data.Items as Property[];
+        } catch (error) {
+            // If GSI doesn't exist, fallback to scan with filter
+            console.warn('GSI not available, falling back to scan:', error);
+            const data = await dynamodb.scan({ TableName: 'properties' }).promise();
+            const allProperties = data.Items as Property[];
+            return allProperties.filter(property => 
+                property.address.city.toLowerCase() === location.toLowerCase()
+            );
+        }
     }
 
     async function listObjectsInFolder(folder: string): Promise<string[]> {
