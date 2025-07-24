@@ -340,6 +340,29 @@ async function handleFileUpdate(req: Request, propertyId: string) {
 
     await dynamodb.update(dbParams).promise();
 
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/" })
+      });
+      // Revalidate all paginated listing pages
+      const data = await dynamodb.scan({ TableName: "properties" }).promise();
+      const totalProperties = data.Items ? data.Items.length : 0;
+      const ITEMS_PER_PAGE = 9;
+      const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
+      for (let i = 1; i <= totalPages; i++) {
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: `/properties/page/${i}` })
+        });
+      }
+    } catch (e) {
+      // Ignore revalidation errors
+      console.error("Revalidation error:", e);
+    }
+
     return NextResponse.json({
       success: true,
       message: "Property updated successfully",
@@ -437,6 +460,29 @@ async function handleJsonUpdate(req: Request, propertyId: string) {
 
     // Update the item in DynamoDB
     await dynamodb.update(dbParams).promise();
+
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: "/" })
+      });
+      // Revalidate all paginated listing pages
+      const data = await dynamodb.scan({ TableName: "properties" }).promise();
+      const totalProperties = data.Items ? data.Items.length : 0;
+      const ITEMS_PER_PAGE = 9;
+      const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
+      for (let i = 1; i <= totalPages; i++) {
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: `/properties/page/${i}` })
+        });
+      }
+    } catch (e) {
+      // Ignore revalidation errors
+      console.error("Revalidation error:", e);
+    }
 
     return NextResponse.json({
       success: true,

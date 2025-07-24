@@ -1,22 +1,58 @@
-"use client";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./components/nav";
 import Footer from "./components/footer";
-import { useEffect, useState } from "react";
 import Property from "./models/property";
-import axios from "axios";
 import PropertyCard from "./components/property_card";
-import useSWR from 'swr';
+import dynamodb from "./lib/dynamodb";
+import AWS from "aws-sdk";
 
-const fetcher = (url: string) => axios.get(url).then(res => res.data);
+export const revalidate = 600; // ISR: Revalidate every 10 minutes
 
-export default function Page() {
-  const { data, error, isLoading } = useSWR('/api/properties/?limit=6', fetcher, {
-    revalidateOnFocus: false,
+async function getFeaturedProperties() {
+  const data = await dynamodb.scan({ TableName: "properties" }).promise();
+  const properties = data.Items as Property[];
+  // Sort active first, then sold (same as properties page)
+  properties.sort((a, b) => {
+    const aIsActive = a.offer !== "Sold";
+    const bIsActive = b.offer !== "Sold";
+    if (aIsActive && !bIsActive) return -1;
+    if (!aIsActive && bIsActive) return 1;
+    return 0;
   });
+  // Get first 6
+  const featured = properties.slice(0, 6);
+  // Fetch images for each property
+  const s3 = new AWS.S3({ region: process.env.AWS_REGION });
+  await Promise.all(
+    featured.map(async (property) => {
+      if (property.imageUrl) {
+        const fullImageUrl = property.imageUrl;
+        const imageFolder = new URL(fullImageUrl).pathname.substring(1);
+        try {
+          const response = await s3.listObjectsV2({
+            Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+            Prefix: imageFolder,
+          }).promise();
+          const imageKeys = response.Contents
+            ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith("/"))
+            : [];
+          property.imageUrls = imageKeys.length > 0
+            ? ["https://d2cw6pmn7dqyjd.cloudfront.net/" + imageKeys[0]]
+            : [];
+        } catch {
+          property.imageUrls = [];
+        }
+      } else {
+        property.imageUrls = [];
+      }
+    })
+  );
+  return featured;
+}
 
-  const properties = data?.properties || [];
+export default async function Page() {
+  const properties = await getFeaturedProperties();
 
   return (
     <>
@@ -74,15 +110,10 @@ export default function Page() {
             {properties.map((property) => (
               <PropertyCard
                 key={property.id}
-                
                 name={property.name}
                 description={property.description}
                 address={property.address}
-                imageUrl={
-                  property.imageUrls && property.imageUrls.length > 0
-                    ? property.imageUrls[0]
-                    : ""
-                }
+                imageUrl={property.imageUrls && property.imageUrls.length > 0 ? property.imageUrls[0] : ""}
                 link={`/properties/${property.id}`}
                 offer={property.offer}
                 price={
@@ -93,9 +124,7 @@ export default function Page() {
                     : property.askingPrice + " or " + property.pricePerSF
                 }
               />
-              
-            ))
-            }
+            ))}
           </div>
         </div>
 

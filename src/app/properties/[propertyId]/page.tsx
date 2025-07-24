@@ -1,42 +1,48 @@
-"use client";
 import Navbar from "../../components/nav";
-import { useEffect, useRef, useState } from "react";
-import Property from "@/app/models/property";
-import axios from "axios";
-import Footer from "@/app/components/footer";
+import Footer from "../../components/footer";
 import { EmblaOptionsType } from "embla-carousel";
-import EmblaCarousel from "@/app/components/carousel";
-import { CardComponent } from "@/app/components/card";
-import useSWR from 'swr';
+import dynamic from "next/dynamic";
+const EmblaCarousel = dynamic(() => import("../../components/carousel"), { ssr: false });
+import { CardComponent } from "../../components/card";
+import Property from "../../models/property";
+import dynamodb from "../../lib/dynamodb";
+import AWS from "aws-sdk";
+import { notFound } from "next/navigation";
 
-const fetcher = (url: string) => axios.get(url).then(res => res.data);
+export const revalidate = 600; // ISR: Revalidate every 10 minutes
 
-export default function SingleProperty({
-  params,
-}: {
-  params: { propertyId: string };
-}) {
-  const id = params.propertyId;
-
-  const { data: property, error, isLoading } = useSWR(
-    id ? `/api/properties/${id}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    }
-  );
-
-  if (error) {
-    return <div>Error loading property</div>;
+async function getPropertyById(id: string) {
+  const data = await dynamodb.get({ TableName: "properties", Key: { id } }).promise();
+  if (!data.Item) return null;
+  const property = data.Item as Property;
+  // Fetch all images for the property
+  if (property.imageUrl) {
+    const s3 = new AWS.S3({ region: process.env.AWS_REGION });
+    const fullImageUrl = property.imageUrl;
+    const imageFolder = new URL(fullImageUrl).pathname.substring(1);
+    const response = await s3.listObjectsV2({
+      Bucket: process.env.AWS_S3_BUCKET_NAME as string,
+      Prefix: imageFolder,
+    }).promise();
+    const imageKeys = response.Contents
+      ? response.Contents.map((item) => item.Key!).filter((key) => !key.endsWith("/"))
+      : [];
+    property.imageUrls = imageKeys.map((key) => encodeURI("https://d2cw6pmn7dqyjd.cloudfront.net/" + key));
+  } else {
+    property.imageUrls = [];
   }
+  return property;
+}
 
-  if (isLoading || !property) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
-      </div>
-    );
-  }
+export async function generateStaticParams() {
+  const data = await dynamodb.scan({ TableName: "properties" }).promise();
+  const properties = data.Items as Property[];
+  return properties.map((property) => ({ propertyId: property.id }));
+}
+
+export default async function SingleProperty({ params }: { params: { propertyId: string } }) {
+  const property = await getPropertyById(params.propertyId);
+  if (!property) notFound();
 
   const OPTIONS: EmblaOptionsType = { dragFree: true, loop: true };
 
