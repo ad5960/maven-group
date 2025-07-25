@@ -1,0 +1,9 @@
+
+runConfig:
+
+  env:
+    - variable: NEXT_PUBLIC_SITE_URL
+      value: "https://maviancre.com"
+      availability:
+        - RUNTIME 
+        - BUILD

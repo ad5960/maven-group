@@ -72,14 +72,20 @@ async function uploadPdfsToS3(files: File[], folderName: string) {
 
 
 export async function POST(req: Request) {
+    console.log("--- POST Request Started ---"); // Start of the request
     try {
         const formData = await req.formData();
+        console.log("POST: FormData parsed."); // Log after parsing form data
+
         const fileList = formData.getAll("files");
         const files = fileList.filter((item): item is File => item instanceof File);
+        console.log(`POST: Found ${files.length} image files.`); // Log number of image files
 
         const pdfFileList = formData.getAll("pdfs");
         const pdfFiles = pdfFileList.filter((item): item is File => item instanceof File);
+        console.log(`POST: Found ${pdfFiles.length} PDF files.`); // Log number of PDF files
 
+        // Destructure form data with logging
         const offer = formData.get("offer")?.toString();
         const name = formData.get("name")?.toString();
         const description = formData.get("description")?.toString();
@@ -98,10 +104,10 @@ export async function POST(req: Request) {
         const zipCode = formData.get("zipCode")?.toString();
         const agent = formData.get("selectedAgent")?.toString();
         const escrow = formData.get("escrow")?.toString();
+        console.log(`POST: Parsed core property data (e.g., name: ${name}, street: ${street}).`);
 
         const customFields = [];
         let index = 0;
-
         while (true) {
             const key = formData.get(`customFields[${index}][key]`);
             const value = formData.get(`customFields[${index}][value]`);
@@ -112,15 +118,23 @@ export async function POST(req: Request) {
                 break; // Exit the loop when no more custom fields are found
             }
         }
+        console.log(`POST: Parsed ${customFields.length} custom fields.`); // Log number of custom fields
 
         if (files.length === 0) {
+            console.warn("POST: No files provided. Returning error."); // Log warning for missing files
             return NextResponse.json({ error: "At least one file is required." });
         }
 
         const folderName = `${street}_${city}_${state}_${zipCode}`.replace(/ /g, "_");
-        const fileUrls = await uploadFilesToS3(files, folderName);
+        console.log(`POST: Generated S3 folder name: ${folderName}`); // Log folder name
 
+        console.log("POST: Attempting to upload image files to S3...");
+        const fileUrls = await uploadFilesToS3(files, folderName);
+        console.log(`POST: Image files uploaded. Number of URLs: ${fileUrls.length}`); // Log S3 upload success
+
+        console.log("POST: Attempting to upload PDF files to S3...");
         const pdfUrls = await uploadPdfsToS3(pdfFiles, folderName);
+        console.log(`POST: PDF files uploaded. Number of URLs: ${pdfUrls.length}`); // Log PDF upload success
 
         const id = uuidv4();
         const params = {
@@ -140,7 +154,7 @@ export async function POST(req: Request) {
                 parking,
                 leaseAmount,
                 address: { street, city, state, zipCode },
-                imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`,
+                imageUrl: `https://mavenpropertyimages.s3.amazonaws.com/${folderName}/`, // Note: This should ideally be 'imageUrls' if storing multiple
                 pdfUrls,
                 customFields,
                 agent,
@@ -148,36 +162,56 @@ export async function POST(req: Request) {
             },
         };
 
+        console.log("POST: Attempting to put item into DynamoDB...");
         await dynamodb.put(params).promise();
+        console.log("POST: Item successfully put into DynamoDB."); // Log DynamoDB success
 
         // Forced revalidation for home and all listings pages
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+            const targetRevalidateUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+            console.log(`POST: Revalidation initiated. Target URL for API calls: ${targetRevalidateUrl}/api/revalidate`); // Crucial log for environment variable verification
+
+            console.log("POST: Revalidating home page (path: /)...");
+            const homeRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ path: "/" })
             });
-            // Revalidate all paginated listing pages
+            const homeRevalidateData = await homeRevalidateRes.json();
+            console.log("POST: Home page revalidation response:", homeRevalidateData); // Log response from /api/revalidate for home page
+
+            console.log("POST: Fetching total properties for paginated listings revalidation...");
             const data = await dynamodb.scan({ TableName: "properties" }).promise();
             const totalProperties = data.Items ? data.Items.length : 0;
-            const ITEMS_PER_PAGE = 9;
+            const ITEMS_PER_PAGE = 9; // Make sure this matches your frontend pagination logic
             const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
+            console.log(`POST: Total properties: ${totalProperties}, Total pages to revalidate: ${totalPages}`); // Log total properties and pages
+
             for (let i = 1; i <= totalPages; i++) {
-                await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+                const pagePath = `/properties/page/${i}`;
+                console.log(`POST: Revalidating page ${i} (path: ${pagePath})...`); // Log current page being revalidated
+                
+                const pageRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ path: `/properties/page/${i}` })
+                    body: JSON.stringify({ path: pagePath })
                 });
+                const pageRevalidateData = await pageRevalidateRes.json();
+                console.log(`POST: Page ${i} revalidation response:`, pageRevalidateData); // Log response from /api/revalidate for each page
             }
-        } catch (e) {
-            // Ignore revalidation errors
-            console.error("Revalidation error:", e);
+            console.log("POST: All revalidation requests sent."); // Log completion of revalidation loop
+            
+        } catch (e: any) { // Catch all errors during revalidation and log them
+            console.error("POST: Revalidation error:", e.message, e.stack); // Log revalidation errors with message and stack
         }
 
+        console.log("POST: Property creation successful. Returning response."); // Log success before returning
         return NextResponse.json({ success: true, message: "Property created successfully" });
-    } catch (error) {
-        console.error("Error creating property:", error);
-        return NextResponse.json({ error: "Failed to create property" });
+    } catch (error: any) { // Catch all errors in the main try block
+        console.error("POST: Error creating property:", error.message, error.stack); // Log main error with message and stack
+        return NextResponse.json({ error: "Failed to create property", details: error.message }, { status: 500 });
+    } finally {
+        console.log("--- POST Request Finished ---"); // End of the request
     }
 }
 
@@ -334,43 +368,70 @@ export async function GET(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+    console.log("--- DELETE Request Started ---");
     try {
         const { id } = await req.json(); // Assuming you send the property ID in the request body
+        console.log(`Received DELETE request for property ID: ${id}`);
+
+        if (!id) {
+            console.warn("No ID provided for deletion.");
+            return NextResponse.json({ error: "No property ID provided" }, { status: 400 });
+        }
 
         const params = {
             TableName: "properties",
             Key: { id },
         };
 
+        console.log("Attempting to delete item from DynamoDB...");
         await dynamodb.delete(params).promise();
+        console.log(`Item with ID ${id} successfully deleted from DynamoDB.`);
 
         // Forced revalidation for home and all listings pages
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+            const targetRevalidateUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+            console.log(`Revalidation initiated. Target URL for API calls: ${targetRevalidateUrl}/api/revalidate`);
+
+            console.log("Attempting to revalidate home page (path: /)...");
+            const homeRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ path: "/" })
             });
+            const homeRevalidateData = await homeRevalidateRes.json();
+            console.log("Home page revalidation response:", homeRevalidateData);
+
             // Revalidate all paginated listing pages
+            console.log("Fetching total properties for pagination revalidation after deletion...");
             const data = await dynamodb.scan({ TableName: "properties" }).promise();
             const totalProperties = data.Items ? data.Items.length : 0;
-            const ITEMS_PER_PAGE = 9;
+            const ITEMS_PER_PAGE = 9; // Ensure this matches your frontend pagination logic
             const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
+            console.log(`Remaining properties: ${totalProperties}, Total pages to revalidate: ${totalPages}`);
+
             for (let i = 1; i <= totalPages; i++) {
-                await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+                const pagePath = `/properties/page/${i}`;
+                console.log(`Attempting to revalidate page ${i} (path: ${pagePath})...`);
+                const pageRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ path: `/properties/page/${i}` })
+                    body: JSON.stringify({ path: pagePath })
                 });
+                const pageRevalidateData = await pageRevalidateRes.json();
+                console.log(`Page ${i} revalidation response:`, pageRevalidateData);
             }
-        } catch (e) {
-            // Ignore revalidation errors
-            console.error("Revalidation error:", e);
+            console.log("All revalidation requests sent after deletion.");
+        } catch (e: any) {
+            // Log revalidation errors but don't prevent the main property deletion
+            console.error("Revalidation error (during fetch to /api/revalidate after deletion):", e.message, e.stack);
         }
 
+        console.log("Property deletion successful. Returning response.");
         return NextResponse.json({ success: true, message: "Property deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting property:", error);
-        return NextResponse.json({ error: "Failed to delete property" });
+    } catch (error: any) {
+        console.error("Error deleting property:", error.message, error.stack);
+        return NextResponse.json({ error: "Failed to delete property", details: error.message }, { status: 500 });
+    } finally {
+        console.log("--- DELETE Request Finished ---");
     }
 }

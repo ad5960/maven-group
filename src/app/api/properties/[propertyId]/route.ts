@@ -152,72 +152,73 @@ export async function PATCH(
   { params }: { params: { propertyId: string } }
 ) {
   const { propertyId } = params;
+  console.log(`--- PATCH Request Started for propertyId: ${propertyId} ---`);
 
   try {
-    // Check if the request is multipart/form-data
     const contentType = req.headers.get('content-type') || '';
-    
+    console.log(`Content-Type: ${contentType}`);
+
     if (contentType.includes('multipart/form-data')) {
-      // Handle file uploads
+      console.log("Handling file update...");
       return await handleFileUpdate(req, propertyId);
     } else {
-      // Handle JSON-only updates (existing functionality)
+      console.log("Handling JSON-only update...");
       return await handleJsonUpdate(req, propertyId);
     }
-  } catch (error) {
-    console.error("Error updating property:", error);
+  } catch (error: any) { // Type 'any' for better error logging
+    console.error("Error updating property (main PATCH handler):", error.message, error.stack);
     return NextResponse.json(
-      { error: "Failed to update property" },
+      { error: "Failed to update property", details: error.message },
       { status: 500 }
     );
+  } finally {
+    console.log(`--- PATCH Request Finished for propertyId: ${propertyId} ---`);
   }
 }
 
 async function handleFileUpdate(req: Request, propertyId: string) {
+  console.log(`handleFileUpdate: Processing for propertyId: ${propertyId}`);
   try {
     const formData = await req.formData();
-    
-    // Get existing property to determine folder name
+    console.log("handleFileUpdate: FormData parsed.");
+
     const existingProperty = await dynamodb.get({
       TableName: "properties",
       Key: { id: propertyId }
     }).promise();
 
     if (!existingProperty.Item) {
+      console.warn(`handleFileUpdate: Property with ID ${propertyId} not found.`);
       return NextResponse.json({ error: "Property not found" }, { status: 404 });
     }
 
     const property = existingProperty.Item;
-    
-    // Extract the existing folder name from the imageUrl
     const existingImageUrl = property.imageUrl;
     let folderName = '';
     
     if (existingImageUrl) {
-      // Extract folder name from the existing imageUrl
-      // imageUrl format: https://mavenpropertyimages.s3.amazonaws.com/folder_name/
       const urlParts = existingImageUrl.split('/');
-      folderName = urlParts[urlParts.length - 2]; // Get the folder name before the trailing slash
+      folderName = urlParts[urlParts.length - 2];
+      console.log(`handleFileUpdate: Extracted folder name from existingImageUrl: ${folderName}`);
     } else {
-      // Fallback to creating folder name from address if no existing imageUrl
       const address = property.address;
       folderName = `${address.street}_${address.city}_${address.state}_${address.zipCode}`.replace(/ /g, "_");
+      console.log(`handleFileUpdate: Generated folder name from address (no existing imageUrl): ${folderName}`);
     }
 
-    // Handle new file uploads
     const fileList = formData.getAll("files");
     const files = fileList.filter((item): item is File => item instanceof File);
+    console.log(`handleFileUpdate: Found ${files.length} new image files.`);
 
     const pdfFileList = formData.getAll("pdfs");
     const pdfFiles = pdfFileList.filter((item): item is File => item instanceof File);
+    console.log(`handleFileUpdate: Found ${pdfFiles.length} new PDF files.`);
 
-    // Handle file deletions
     const imagesToDelete = formData.get("imagesToDelete")?.toString().split(',').filter(Boolean) || [];
     const pdfsToDelete = formData.get("pdfsToDelete")?.toString().split(',').filter(Boolean) || [];
+    console.log(`handleFileUpdate: Images to delete: ${imagesToDelete.length}, PDFs to delete: ${pdfsToDelete.length}`);
 
-    // Delete specified files
     for (const imageUrl of imagesToDelete) {
-      // Handle both direct S3 URLs and CloudFront URLs
       let key = '';
       if (imageUrl.includes('mavenpropertyimages.s3.amazonaws.com')) {
         key = imageUrl.replace('https://mavenpropertyimages.s3.amazonaws.com/', '');
@@ -225,28 +226,32 @@ async function handleFileUpdate(req: Request, propertyId: string) {
         key = imageUrl.replace('https://d2cw6pmn7dqyjd.cloudfront.net/', '');
       }
       if (key) {
+        console.log(`handleFileUpdate: Deleting image from S3: ${key}`);
         await deleteFileFromS3(BUCKET_NAME, key);
       }
     }
 
     for (const pdfUrl of pdfsToDelete) {
       const key = pdfUrl.replace('https://mavenattachments.s3.amazonaws.com/', '');
+      console.log(`handleFileUpdate: Deleting PDF from S3: ${key}`);
       await deleteFileFromS3(BUCKET_NAME_ATTACHMENTS, key);
     }
 
-    // Upload new files
     let newImageUrls: string[] = [];
     let newPdfUrls: string[] = [];
 
     if (files.length > 0) {
+      console.log("handleFileUpdate: Uploading new image files...");
       newImageUrls = await uploadFilesToS3(files, folderName);
+      console.log(`handleFileUpdate: Uploaded ${newImageUrls.length} new image files.`);
     }
 
     if (pdfFiles.length > 0) {
+      console.log("handleFileUpdate: Uploading new PDF files...");
       newPdfUrls = await uploadPdfsToS3(pdfFiles, folderName);
+      console.log(`handleFileUpdate: Uploaded ${newPdfUrls.length} new PDF files.`);
     }
 
-    // Get existing URLs and combine with new ones
     const existingImageUrls = property.imageUrls || [];
     const existingPdfUrls = property.pdfUrls || [];
 
@@ -254,13 +259,14 @@ async function handleFileUpdate(req: Request, propertyId: string) {
       ...existingImageUrls.filter((url: string) => !imagesToDelete.includes(url)),
       ...newImageUrls
     ];
-
     const finalPdfUrls = [
       ...existingPdfUrls.filter((url: string) => !pdfsToDelete.includes(url)),
       ...newPdfUrls
     ];
+    console.log(`handleFileUpdate: Final image URLs count: ${finalImageUrls.length}`);
+    console.log(`handleFileUpdate: Final PDF URLs count: ${finalPdfUrls.length}`);
 
-    // Extract other form data
+    // Extract other form data (add console.logs for these if desired)
     const offer = formData.get("offer")?.toString();
     const name = formData.get("name")?.toString();
     const description = formData.get("description")?.toString();
@@ -279,7 +285,8 @@ async function handleFileUpdate(req: Request, propertyId: string) {
     const state = formData.get("state")?.toString();
     const zipCode = formData.get("zipCode")?.toString();
 
-    // Update DynamoDB
+
+    console.log("handleFileUpdate: Preparing DynamoDB update parameters...");
     const dbParams = {
       TableName: "properties",
       Key: { id: propertyId },
@@ -338,39 +345,56 @@ async function handleFileUpdate(req: Request, propertyId: string) {
       },
     };
 
+    console.log("handleFileUpdate: Attempting to update item in DynamoDB...");
     await dynamodb.update(dbParams).promise();
+    console.log("handleFileUpdate: Item successfully updated in DynamoDB.");
 
+    // Forced revalidation for home and all listings pages
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+      const targetRevalidateUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      console.log(`handleFileUpdate: Revalidation initiated. Target URL: ${targetRevalidateUrl}/api/revalidate`);
+
+      console.log("handleFileUpdate: Revalidating home page (path: /)...");
+      const homeRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: "/" })
       });
-      // Revalidate all paginated listing pages
+      const homeRevalidateData = await homeRevalidateRes.json();
+      console.log("handleFileUpdate: Home page revalidation response:", homeRevalidateData);
+
+      console.log("handleFileUpdate: Fetching total properties for paginated listings revalidation...");
       const data = await dynamodb.scan({ TableName: "properties" }).promise();
       const totalProperties = data.Items ? data.Items.length : 0;
       const ITEMS_PER_PAGE = 9;
       const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
+      console.log(`handleFileUpdate: Total properties: ${totalProperties}, Total pages to revalidate: ${totalPages}`);
+
       for (let i = 1; i <= totalPages; i++) {
-        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+        const pagePath = `/properties/page/${i}`;
+        console.log(`handleFileUpdate: Revalidating page ${i} (path: ${pagePath})...`);
+        const pageRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ path: `/properties/page/${i}` })
+          body: JSON.stringify({ path: pagePath })
         });
+        const pageRevalidateData = await pageRevalidateRes.json();
+        console.log(`handleFileUpdate: Page ${i} revalidation response:`, pageRevalidateData);
       }
-    } catch (e) {
-      // Ignore revalidation errors
-      console.error("Revalidation error:", e);
+      console.log("handleFileUpdate: All revalidation requests sent.");
+    } catch (e: any) {
+      console.error("handleFileUpdate: Revalidation error (during fetch to /api/revalidate):", e.message, e.stack);
     }
 
+    console.log("handleFileUpdate: Property updated successfully with files. Returning response.");
     return NextResponse.json({
       success: true,
       message: "Property updated successfully",
       imageUrls: finalImageUrls,
       pdfUrls: finalPdfUrls,
     });
-  } catch (error) {
-    console.error("Error updating property with files:", error);
+  } catch (error: any) {
+    console.error("Error updating property with files (handleFileUpdate):", error.message, error.stack);
     return NextResponse.json(
       { error: "Failed to update property" },
       { status: 500 }
@@ -379,33 +403,25 @@ async function handleFileUpdate(req: Request, propertyId: string) {
 }
 
 async function handleJsonUpdate(req: Request, propertyId: string) {
+  console.log(`handleJsonUpdate: Processing for propertyId: ${propertyId}`);
   try {
-    // Parse the JSON data from the request body
+    const jsonBody = await req.json();
+    console.log("handleJsonUpdate: JSON data parsed.");
+
     const {
-      offer,
-      name,
-      description,
-      askingPrice,
-      pricePerSF,
-      propertyType,
-      buildingSize,
-      landSize,
-      yearBuilt,
-      frontage,
-      parking,
-      leaseAmount,
-      address,
-      escrow,
-    } = await req.json();
+      offer, name, description, askingPrice, pricePerSF, propertyType, buildingSize,
+      landSize, yearBuilt, frontage, parking, leaseAmount, address, escrow,
+    } = jsonBody;
 
     if (!propertyId) {
+      console.warn("handleJsonUpdate: Property ID is required for JSON update.");
       return NextResponse.json(
         { error: "Property ID is required" },
         { status: 400 }
       );
     }
 
-    // Construct the DynamoDB update parameters
+    console.log("handleJsonUpdate: Preparing DynamoDB update parameters...");
     const dbParams = {
       TableName: "properties",
       Key: { id: propertyId },
@@ -458,38 +474,55 @@ async function handleJsonUpdate(req: Request, propertyId: string) {
       },
     };
 
-    // Update the item in DynamoDB
+    console.log("handleJsonUpdate: Attempting to update item in DynamoDB...");
     await dynamodb.update(dbParams).promise();
+    console.log("handleJsonUpdate: Item successfully updated in DynamoDB.");
 
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+      const targetRevalidateUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      console.log(`handleJsonUpdate: Revalidation initiated. Target URL: ${targetRevalidateUrl}/api/revalidate`);
+
+      console.log("handleJsonUpdate: Revalidating home page (path: /)...");
+      const homeRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: "/" })
       });
-      // Revalidate all paginated listing pages
+      const homeRevalidateData = await homeRevalidateRes.json();
+      console.log("handleJsonUpdate: Home page revalidation response:", homeRevalidateData);
+
+      console.log("handleJsonUpdate: Fetching total properties for paginated listings revalidation...");
       const data = await dynamodb.scan({ TableName: "properties" }).promise();
       const totalProperties = data.Items ? data.Items.length : 0;
       const ITEMS_PER_PAGE = 9;
       const totalPages = Math.max(1, Math.ceil(totalProperties / ITEMS_PER_PAGE));
-      for (let i = 1; i <= totalPages; i++) {
-        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/revalidate`, {
+      console.log(`handleJsonUpdate: Total properties: ${totalProperties}, Total pages to revalidate: ${totalPages}`);
+
+      for (let i = 1; i <= totalPages; i++) { // FIX: Loop condition should be i <= totalPages
+        const pagePath = `/properties/page/${i}`;
+        
+
+        console.log(`handleJsonUpdate: Revalidating page ${i} (path: ${pagePath})...`);
+        const pageRevalidateRes = await fetch(`${targetRevalidateUrl}/api/revalidate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ path: `/properties/page/${i}` })
+          body: JSON.stringify({ path: pagePath })
         });
+        const pageRevalidateData = await pageRevalidateRes.json();
+        console.log(`handleJsonUpdate: Page ${i} revalidation response:`, pageRevalidateData);
       }
-    } catch (e) {
-      // Ignore revalidation errors
-      console.error("Revalidation error:", e);
+      console.log("handleJsonUpdate: All revalidation requests sent.");
+    } catch (e: any) {
+      console.error("handleJsonUpdate: Revalidation error (during fetch to /api/revalidate):", e.message, e.stack);
     }
 
+    console.log("handleJsonUpdate: Property updated successfully via JSON. Returning response.");
     return NextResponse.json({
       success: true,
       message: "Property updated successfully",
     });
-  } catch (error) {
-    console.error("Error updating property:", error);
+  } catch (error: any) {
+    console.error("Error updating property (handleJsonUpdate):", error.message, error.stack);
     return NextResponse.json(
       { error: "Failed to update property" },
       { status: 500 }
